@@ -281,6 +281,13 @@
 </div>
 
 <script>
+    // ── Global error handler ─────────────────────────
+    window.onerror = function(msg, url, line) {
+        console.error('JS Error:', msg, url, line);
+        setLoading('loginBtn', false);
+        setLoading('regBtn', false);
+    };
+
     // ── Supabase Config ──────────────────────────────
     const SUPABASE_URL = 'https://ijbarjipnwyzjbskicpy.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYmFyamlwbnd5empic2tpY3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjI3NDAsImV4cCI6MjEwMDE5ODc0MH0.zjv7I13UfkZjgrdsWTg196vD0K8p1iiyJls0yuFl704';
@@ -315,9 +322,12 @@
 
     function setLoading(btnId, loading) {
         const btn = document.getElementById(btnId);
+        if (!btn) return;
         if (loading) {
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Загрузка...';
+            // Auto-reset after 5 seconds in case of silent failure
+            setTimeout(() => { if (btn.disabled) { btn.disabled = false; btn.textContent = btnId === 'loginBtn' ? 'Войти' : 'Создать аккаунт'; } }, 5000);
         } else {
             btn.disabled = false;
             btn.textContent = btnId === 'loginBtn' ? 'Войти' : 'Создать аккаунт';
@@ -425,7 +435,7 @@
                 setLoading('regBtn', false);
             }
         } catch (err) {
-            showError('Ошибка: ' + err.message);
+            showError('Ошибка: ' + (err.message || err));
             setLoading('regBtn', false);
         }
     }
@@ -459,8 +469,12 @@
 
     // ── Check session on load ────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
+        // Reset all buttons on page load
+        setLoading('loginBtn', false);
+        setLoading('regBtn', false);
+
         const session = JSON.parse(localStorage.getItem('jartix_session') || 'null');
-        if (session?.access_token) {
+        if (session?.user?.id) {
             supabaseRequest('/rest/v1/profiles?id=eq.' + session.user.id + '&select=*')
                 .then(({ data }) => {
                     if (data?.[0]) showDashboard(data[0]);
