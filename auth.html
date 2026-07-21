@@ -143,11 +143,12 @@
         <h3>Лицензионный ключ</h3>
         <div class="key-display" id="dKey">—</div>
         <p style="font-size:11px; color:rgba(255,255,255,0.25); margin-top:6px;">Введите в лаунчере для активации</p>
+        <button class="btn btn-outline" style="margin-top:10px; font-size:11px; padding:6px 14px; width:auto;" onclick="clearKey()">Удалить ключ</button>
     </div>
 
     <div class="dash-card">
         <h3>Скачать лаунчер</h3>
-        <a href="https://raw.githubusercontent.com/Jarvis-Production/client/main/jartix-1.0.04.jar" target="_blank" class="btn btn-primary" style="margin-top:8px;">Скачать jartix.jar</a>
+        <a href="https://github.com/Jarvis-Production/site/raw/refs/heads/main/Jartix.exe" target="_blank" class="btn btn-primary" style="margin-top:8px;">Скачать Jartix.exe</a>
     </div>
 </div>
 
@@ -287,6 +288,15 @@ async function activateKey() {
     }
     btn.disabled = false;
     btn.textContent = 'Активировать';
+}
+
+async function clearKey() {
+    if (!confirm('Удалить текущий ключ?')) return;
+    const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
+    if (!s?.user?.id) return;
+    await sbApi('/rest/v1/profiles', 'PATCH', { license_key: '' });
+    document.getElementById('hasKeySection').style.display = 'none';
+    document.getElementById('noKeySection').style.display = 'block';
 }
 
 function doLogout() {
