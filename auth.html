@@ -113,15 +113,37 @@
         <h1>Кабинет</h1>
         <button class="btn btn-outline" style="width:auto; padding:8px 16px; font-size:12px;" onclick="logout()">Выйти</button>
     </div>
+
     <div class="dash-card">
         <h3>Пользователь</h3>
         <div class="value" id="dashUser">—</div>
     </div>
-    <div class="dash-card">
+
+    <!-- Если нет ключа — показать покупку -->
+    <div class="dash-card" id="buySection">
+        <h3>Лицензия</h3>
+        <p style="font-size:13px; color:rgba(255,255,255,0.4); margin:8px 0 16px;">У вас нет активной лицензии. Купите или активируйте ключ.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a href="https://t.me/JarvisProduction" target="_blank" class="btn btn-primary" style="width:auto; padding:10px 20px; font-size:13px;">Купить лицензию</a>
+            <button class="btn btn-outline" style="width:auto; padding:10px 20px; font-size:13px;" onclick="showActivateForm()">У меня есть ключ</button>
+        </div>
+        <div id="activateForm" style="display:none; margin-top:16px;">
+            <div class="form-group">
+                <label class="form-label">Введите ключ</label>
+                <input type="text" class="form-input" id="activateKey" placeholder="JX-XXXX-XXXX-XXXX">
+            </div>
+            <button class="btn btn-primary" style="width:auto; padding:10px 20px; font-size:13px;" onclick="activateKey()">Активировать</button>
+            <div class="message error" id="activateError" style="margin-top:8px;"></div>
+        </div>
+    </div>
+
+    <!-- Если есть ключ — показать его -->
+    <div class="dash-card" id="keySection" style="display:none;">
         <h3>Лицензионный ключ</h3>
         <div class="key-display" id="dashKey">—</div>
         <p style="font-size:11px; color:rgba(255,255,255,0.25); margin-top:6px;">Введите в лаунчере для активации</p>
     </div>
+
     <div class="dash-card">
         <h3>Скачать лаунчер</h3>
         <button class="btn btn-primary" style="width:auto; padding:10px 20px; margin-top:8px;" onclick="window.open('https://raw.githubusercontent.com/Jarvis-Production/client/main/jartix-1.0.04.jar')">Скачать jartix.jar</button>
@@ -196,16 +218,16 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
 
         localStorage.setItem('jx_session', JSON.stringify(data));
 
-        // Create profile if registering
+        // Create profile if registering (without key — key comes from purchase)
         if (!isLogin && data.user?.id) {
             await api('/rest/v1/profiles', 'POST', {
-                id: data.user.id, username: username, license_key: 'JX-' + genKey()
+                id: data.user.id, username: username, license_key: ''
             });
         }
 
         // Get profile
         const userId = data.user?.id;
-        let user = { username: username, license_key: 'JX-' + genKey() };
+        let user = { username: username, license_key: '' };
         if (userId) {
             const { data: profiles } = await api('/rest/v1/profiles?id=eq.' + userId + '&select=*', 'GET');
             if (profiles?.[0]) user = profiles[0];
@@ -222,7 +244,47 @@ function showDashboard(user) {
     document.getElementById('authScreen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     document.getElementById('dashUser').textContent = user.username || 'User';
-    document.getElementById('dashKey').textContent = user.license_key || '—';
+
+    if (user.license_key && user.license_key.trim() !== '') {
+        document.getElementById('buySection').style.display = 'none';
+        document.getElementById('keySection').style.display = 'block';
+        document.getElementById('dashKey').textContent = user.license_key;
+    } else {
+        document.getElementById('buySection').style.display = 'block';
+        document.getElementById('keySection').style.display = 'none';
+    }
+}
+
+function showActivateForm() {
+    document.getElementById('activateForm').style.display = 'block';
+}
+
+async function activateKey() {
+    const key = document.getElementById('activateKey').value.trim();
+    const errEl = document.getElementById('activateError');
+    errEl.style.display = 'none';
+
+    if (!key) { errEl.textContent = 'Введите ключ'; errEl.style.display = 'block'; return; }
+
+    try {
+        const s = JSON.parse(localStorage.getItem('jx_session') || 'null');
+        if (!s?.user?.id) { errEl.textContent = 'Ошибка сессии'; errEl.style.display = 'block'; return; }
+
+        const { ok, data } = await api('/rest/v1/profiles', 'PATCH', {
+            license_key: key
+        });
+
+        if (!ok) { errEl.textContent = data.msg || 'Ошибка активации'; errEl.style.display = 'block'; return; }
+
+        // Update dashboard
+        document.getElementById('buySection').style.display = 'none';
+        document.getElementById('keySection').style.display = 'block';
+        document.getElementById('dashKey').textContent = key;
+        showSuccess('Лицензия активирована!');
+    } catch (err) {
+        errEl.textContent = 'Ошибка: ' + err.message;
+        errEl.style.display = 'block';
+    }
 }
 
 function logout() {
