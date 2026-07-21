@@ -275,7 +275,7 @@ async function activateKey() {
         const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
         if (!s?.user?.id) { errEl.textContent = 'Ошибка сессии'; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Активировать'; return; }
 
-        await sbApi('/rest/v1/profiles', 'PATCH', { license_key: key });
+        await sbApi('/rest/v1/profiles?id=eq.' + s.user.id, 'PATCH', { license_key: key });
 
         // Update dashboard
         document.getElementById('noKeySection').style.display = 'none';
@@ -294,7 +294,7 @@ async function clearKey() {
     if (!confirm('Удалить текущий ключ?')) return;
     const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
     if (!s?.user?.id) return;
-    await sbApi('/rest/v1/profiles', 'PATCH', { license_key: '' });
+    await sbApi('/rest/v1/profiles?id=eq.' + s.user.id, 'PATCH', { license_key: '' });
     document.getElementById('hasKeySection').style.display = 'none';
     document.getElementById('noKeySection').style.display = 'block';
 }
