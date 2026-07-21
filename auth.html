@@ -261,7 +261,9 @@ async function activateKey() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key: key, hwid: 'web-activation' })
         });
-        const result = await resp.json();
+        const text = await resp.text();
+        let result;
+        try { result = JSON.parse(text); } catch { result = { error: 'Сервер не отвечает' }; }
 
         if (!result.success) {
             errEl.textContent = result.error || result.message || 'Неверный ключ';
