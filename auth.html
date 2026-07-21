@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0a0c12">
+    <title>Jartix — Регистрация / Вход</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0c12;
+            --card: rgba(18, 21, 30, 0.65);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --primary: #6382FF;
+            --primary-glow: rgba(99, 130, 255, 0.15);
+            --text: #e8eaef;
+            --text-dim: rgba(255, 255, 255, 0.4);
+            --text-muted: rgba(255, 255, 255, 0.25);
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --error: #f87171;
+            --success: #34d399;
+            --font: 'Inter', system-ui, sans-serif;
+            --font-title: 'Manrope', system-ui, sans-serif;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font); background: var(--bg);
+            color: var(--text); -webkit-font-smoothing: antialiased;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ── Auth Container ──────────────────────────── */
+        .auth-container {
+            width: 100%; max-width: 420px; padding: 24px;
+        }
+        .auth-card {
+            border-radius: 20px; padding: 40px 32px;
+            background: rgba(18, 21, 30, 0.65);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .auth-logo {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; margin-bottom: 32px;
+        }
+        .auth-logo-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: #6382FF; display: flex;
+            align-items: center; justify-content: center;
+            font-family: 'Manrope', sans-serif; font-weight: 800;
+            font-size: 18px; color: #0a0c12;
+        }
+        .auth-logo-text {
+            font-family: 'Manrope', sans-serif; font-size: 22px;
+            font-weight: 700; color: rgba(255,255,255,0.9);
+        }
+        .auth-title {
+            font-family: 'Manrope', sans-serif; font-size: 24px;
+            font-weight: 700; text-align: center; margin-bottom: 8px;
+        }
+        .auth-subtitle {
+            text-align: center; color: rgba(255,255,255,0.4);
+            font-size: 14px; margin-bottom: 28px;
+        }
+
+        /* ── Form ─────────────────────────────────────── */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block; font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.5); margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%; padding: 12px 16px; border-radius: 12px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            color: #fff; font-size: 14px; font-family: 'Inter', sans-serif;
+            transition: all 0.2s; outline: none;
+        }
+        .form-input:focus {
+            border-color: #6382FF;
+            box-shadow: 0 0 0 3px rgba(99,130,255,0.15);
+        }
+        .form-input::placeholder { color: rgba(255,255,255,0.2); }
+
+        /* ── Buttons ──────────────────────────────────── */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px; border-radius: 14px; font-weight: 600;
+            font-size: 15px; text-decoration: none; transition: all 0.25s;
+            border: none; cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: #6382FF; color: #0a0c12;
+            box-shadow: 0 0 30px rgba(99,130,255,0.25);
+        }
+        .btn-primary:hover {
+            background: #7b94ff; transform: translateY(-1px);
+            box-shadow: 0 0 40px rgba(99,130,255,0.35);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5; cursor: not-allowed; transform: none;
+        }
+        .btn-glass {
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .btn-glass:hover {
+            background: rgba(255,255,255,0.1); color: #fff;
+        }
+
+        /* ── Tabs ─────────────────────────────────────── */
+        .auth-tabs {
+            display: flex; gap: 4px; margin-bottom: 28px;
+            background: rgba(255,255,255,0.03); border-radius: 10px; padding: 4px;
+        }
+        .auth-tab {
+            flex: 1; padding: 10px; border-radius: 8px; border: none;
+            background: transparent; color: rgba(255,255,255,0.4);
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+        .auth-tab.active {
+            background: rgba(255,255,255,0.08); color: #fff;
+        }
+        .auth-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+        /* ── Messages ─────────────────────────────────── */
+        .message {
+            padding: 12px 16px; border-radius: 10px; font-size: 13px;
+            margin-bottom: 16px; display: none;
+        }
+        .message.error {
+            background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2);
+            color: #f87171;
+        }
+        .message.success {
+            background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2);
+            color: #34d399;
+        }
+
+        /* ── Links ────────────────────────────────────── */
+        .auth-footer {
+            text-align: center; margin-top: 20px;
+            font-size: 13px; color: rgba(255,255,255,0.35);
+        }
+        .auth-footer a {
+            color: #6382FF; text-decoration: none; font-weight: 500;
+        }
+        .auth-footer a:hover { color: #7b94ff; }
+
+        /* ── Loading ──────────────────────────────────── */
+        .spinner {
+            width: 18px; height: 18px; border: 2px solid transparent;
+            border-top-color: currentColor; border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Dashboard ────────────────────────────────── */
+        .dashboard { display: none; width: 100%; max-width: 800px; padding: 24px; }
+        .dashboard-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 32px;
+        }
+        .dashboard-header h1 {
+            font-family: 'Manrope', sans-serif; font-size: 28px; font-weight: 700;
+        }
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+            margin-bottom: 24px;
+        }
+        .dash-card {
+            border-radius: 16px; padding: 24px;
+            background: rgba(18, 21, 30, 0.65);
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06);
+        }
+        .dash-card h3 {
+            font-size: 13px; color: rgba(255,255,255,0.4);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        }
+        .dash-card .value {
+            font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 700;
+        }
+        .key-display {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 16px; margin-top: 12px;
+            font-family: monospace; font-size: 14px; color: #6382FF;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Auth Screen -->
+<div class="auth-container" id="authScreen">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="auth-logo-icon">J</span>
+            <span class="auth-logo-text">jartix</span>
+        </div>
+
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="showTab('login')">Вход</button>
+            <button class="auth-tab" onclick="showTab('register')">Регистрация</button>
+        </div>
+
+        <div class="message error" id="errorMsg"></div>
+        <div class="message success" id="successMsg"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="loginEmail" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="loginBtn">Войти</button>
+            <p class="auth-footer">Нет аккаунта? <a href="#" onclick="showTab('register'); return false;">Зарегистрироваться</a></p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" style="display:none" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label class="form-label">Имя пользователя</label>
+                <input type="text" class="form-input" id="regUsername" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="regEmail" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" class="form-input" id="regPassword" placeholder="Минимум 6 символов" required minlength="6">
+            </div>
+            <button type="submit" class="btn btn-primary" id="regBtn">Создать аккаунт</button>
+            <p class="auth-footer">Уже есть аккаунт? <a href="#" onclick="showTab('login'); return false;">Войти</a></p>
+        </form>
+
+        <p class="auth-footer" style="margin-top:24px;">
+            <a href="index.html">← На главную</a>
+        </p>
+    </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+    <div class="dashboard-header">
+        <h1>Кабинет</h1>
+        <button class="btn btn-glass" style="width:auto; padding:10px 20px;" onclick="handleLogout()">Выйти</button>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dash-card">
+            <h3>Пользователь</h3>
+            <div class="value" id="dashUsername">—</div>
+        </div>
+        <div class="dash-card">
+            <h3>Статус</h3>
+            <div class="value" style="color: #34d399;">Активен</div>
+        </div>
+    </div>
+
+    <div class="dash-card">
+        <h3>Ваш лицензионный ключ</h3>
+        <div class="key-display" id="dashKey">Ключ будет назначен администратором</div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:8px;">Введите этот ключ в лаунчере для активации.</p>
+    </div>
+
+    <div class="dash-card" style="margin-top:16px;">
+        <h3>Скачать лаунчер</h3>
+        <p style="font-size:13px; color:rgba(255,255,255,0.4); margin:8px 0 12px;">Последняя версия клиента</p>
+        <button class="btn btn-primary" style="width:auto; padding:12px 24px;" onclick="window.open('https://raw.githubusercontent.com/Jarvis-Production/client/main/jartix-1.0.04.jar')">
+            Скачать jartix.jar
+        </button>
+    </div>
+</div>
+
+<script>
+    // ── Supabase Config ──────────────────────────────
+    const SUPABASE_URL = 'https://ijbjarjpnwyzjbjskicpy.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYmFyamlwbnd5empic2tpY3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjI3NDAsImV4cCI6MjEwMDE5ODc0MH0.zjv7I13UfkZjgrdsWTg196vD0K8p1iiyJls0yuFl704';
+
+    // ── Tab switching ────────────────────────────────
+    function showTab(tab) {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.auth-tab')[tab === 'login' ? 0 : 1].classList.add('active');
+        document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+        hideMessages();
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('errorMsg');
+        el.textContent = msg;
+        el.style.display = 'block';
+        document.getElementById('successMsg').style.display = 'none';
+    }
+
+    function showSuccess(msg) {
+        const el = document.getElementById('successMsg');
+        el.textContent = msg;
+        el.style.display = 'block';
+        document.getElementById('errorMsg').style.display = 'none';
+    }
+
+    function hideMessages() {
+        document.getElementById('errorMsg').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'none';
+    }
+
+    function setLoading(btnId, loading) {
+        const btn = document.getElementById(btnId);
+        if (loading) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Загрузка...';
+        } else {
+            btn.disabled = false;
+            btn.textContent = btnId === 'loginBtn' ? 'Войти' : 'Создать аккаунт';
+        }
+    }
+
+    // ── Supabase API calls ──────────────────────────
+    async function supabaseRequest(endpoint, method = 'GET', body = null) {
+        const headers = {
+            'apikey': SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+        };
+        const session = JSON.parse(localStorage.getItem('jartix_session') || 'null');
+        if (session?.access_token) {
+            headers['Authorization'] = 'Bearer ' + session.access_token;
+        }
+        const config = { method, headers };
+        if (body) config.body = JSON.stringify(body);
+        const resp = await fetch(`${SUPABASE_URL}${endpoint}`, config);
+        return { ok: resp.ok, data: await resp.json() };
+    }
+
+    // ── Login ────────────────────────────────────────
+    async function handleLogin(e) {
+        e.preventDefault();
+        hideMessages();
+        setLoading('loginBtn', true);
+
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+            const { ok, data } = await supabaseRequest('/auth/v1/token?grant_type=password', 'POST', {
+                email, password
+            });
+
+            if (!ok) {
+                showError(data.error_description || data.msg || 'Неверный email или пароль');
+                setLoading('loginBtn', false);
+                return;
+            }
+
+            localStorage.setItem('jartix_session', JSON.stringify(data));
+
+            // Fetch user profile
+            const { data: profile } = await supabaseRequest('/rest/v1/profiles?id=eq.' + data.user.id + '&select=*');
+            const user = profile?.[0] || { username: email.split('@')[0], license_key: '' };
+
+            showDashboard(user);
+        } catch (err) {
+            showError('Ошибка подключения: ' + err.message);
+            setLoading('loginBtn', false);
+        }
+    }
+
+    // ── Register ─────────────────────────────────────
+    async function handleRegister(e) {
+        e.preventDefault();
+        hideMessages();
+        setLoading('regBtn', true);
+
+        const username = document.getElementById('regUsername').value;
+        const email = document.getElementById('regEmail').value;
+        const password = document.getElementById('regPassword').value;
+
+        try {
+            // Register with Supabase Auth
+            const { ok, data } = await supabaseRequest('/auth/v1/signup', 'POST', {
+                email, password,
+                data: { username }
+            });
+
+            if (!ok) {
+                showError(data.error_description || data.msg || 'Ошибка регистрации');
+                setLoading('regBtn', false);
+                return;
+            }
+
+            // Create profile
+            await supabaseRequest('/rest/v1/profiles', 'POST', {
+                id: data.user.id,
+                username: username,
+                license_key: 'JX-' + generateKey()
+            });
+
+            localStorage.setItem('jartix_session', JSON.stringify(data));
+            showSuccess('Аккаунт создан! Входим...');
+
+            setTimeout(() => {
+                showDashboard({
+                    username: username,
+                    license_key: 'JX-' + generateKey()
+                });
+            }, 1000);
+        } catch (err) {
+            showError('Ошибка: ' + err.message);
+            setLoading('regBtn', false);
+        }
+    }
+
+    // ── Generate license key ─────────────────────────
+    function generateKey() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let key = '';
+        for (let i = 0; i < 16; i++) {
+            if (i > 0 && i % 4 === 0) key += '-';
+            key += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return key;
+    }
+
+    // ── Dashboard ────────────────────────────────────
+    function showDashboard(user) {
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('dashUsername').textContent = user.username || 'User';
+        document.getElementById('dashKey').textContent = user.license_key || 'Ключ будет назначен';
+    }
+
+    // ── Logout ───────────────────────────────────────
+    function handleLogout() {
+        localStorage.removeItem('jartix_session');
+        document.getElementById('authScreen').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        showTab('login');
+    }
+
+    // ── Check session on load ────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+        const session = JSON.parse(localStorage.getItem('jartix_session') || 'null');
+        if (session?.access_token) {
+            supabaseRequest('/rest/v1/profiles?id=eq.' + session.user.id + '&select=*')
+                .then(({ data }) => {
+                    if (data?.[0]) showDashboard(data[0]);
+                });
+        }
+    });
+</script>
+
+</body>
+</html>
