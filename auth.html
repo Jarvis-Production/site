@@ -360,6 +360,12 @@
                 return;
             }
 
+            if (!data.user || !data.user.id) {
+                showError('Ошибка авторизации');
+                setLoading('loginBtn', false);
+                return;
+            }
+
             localStorage.setItem('jartix_session', JSON.stringify(data));
 
             // Fetch user profile
@@ -367,6 +373,11 @@
             const user = profile?.[0] || { username: email.split('@')[0], license_key: '' };
 
             showDashboard(user);
+        } catch (err) {
+            showError('Ошибка подключения: ' + err.message);
+            setLoading('loginBtn', false);
+        }
+    }
         } catch (err) {
             showError('Ошибка подключения: ' + err.message);
             setLoading('loginBtn', false);
@@ -384,7 +395,6 @@
         const password = document.getElementById('regPassword').value;
 
         try {
-            // Register with Supabase Auth
             const { ok, data } = await supabaseRequest('/auth/v1/signup', 'POST', {
                 email, password,
                 data: { username }
@@ -396,22 +406,24 @@
                 return;
             }
 
-            // Create profile
-            await supabaseRequest('/rest/v1/profiles', 'POST', {
-                id: data.user.id,
-                username: username,
-                license_key: 'JX-' + generateKey()
-            });
-
-            localStorage.setItem('jartix_session', JSON.stringify(data));
-            showSuccess('Аккаунт создан! Входим...');
-
-            setTimeout(() => {
-                showDashboard({
+            // Check if user object exists (email confirmation might be required)
+            if (data.user && data.user.id) {
+                // Auto-login: create profile and show dashboard
+                await supabaseRequest('/rest/v1/profiles', 'POST', {
+                    id: data.user.id,
                     username: username,
                     license_key: 'JX-' + generateKey()
                 });
-            }, 1000);
+                localStorage.setItem('jartix_session', JSON.stringify(data));
+                showSuccess('Аккаунт создан!');
+                setTimeout(() => {
+                    showDashboard({ username: username, license_key: 'JX-' + generateKey() });
+                }, 1000);
+            } else {
+                // Email confirmation required
+                showSuccess('Письмо с подтверждением отправлено на ' + email + '. Проверьте почту.');
+                setLoading('regBtn', false);
+            }
         } catch (err) {
             showError('Ошибка: ' + err.message);
             setLoading('regBtn', false);
