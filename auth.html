@@ -155,7 +155,6 @@
 <script>
 const SB_URL = 'https://ijbarjipnwyzjbskicpy.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYmFyamlwbnd5empic2tpY3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjI3NDAsImV4cCI6MjEwMDE5ODc0MH0.zjv7I13UfkZjgrdsWTg196vD0K8p1iiyJls0yuFl704';
-const LAUNCHER_API = 'https://launcher-server-wl84.onrender.com';
 
 let isLogin = false;
 
@@ -255,25 +254,16 @@ async function activateKey() {
     btn.innerHTML = '<span class="spinner"></span>';
 
     try {
-        // Validate key against launcher server
-        const resp = await fetch(LAUNCHER_API + '/api/launcher/check', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: key, hwid: 'web-activation' })
-        });
-        const text = await resp.text();
-        let result;
-        try { result = JSON.parse(text); } catch { result = { error: 'Сервер не отвечает' }; }
-
-        if (!result.success) {
-            errEl.textContent = result.error || result.message || 'Неверный ключ';
+        // Validate key format locally (JX-XXXX-XXXX-XXXX)
+        if (!/^JX-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(key)) {
+            errEl.textContent = 'Неверный формат ключа';
             errEl.style.display = 'block';
             btn.disabled = false;
             btn.textContent = 'Активировать';
             return;
         }
 
-        // Key is valid — save to profile
+        // Save key to profile — HWID binding happens in the launcher
         const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
         if (!s?.user?.id) { errEl.textContent = 'Ошибка сессии'; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Активировать'; return; }
 
