@@ -199,7 +199,8 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
         const { ok, data } = await sbApi(ep, 'POST', body);
 
         if (!ok || !data.access_token) {
-            showErr(data.error_description || data.msg || 'Ошибка');
+            const errMsg = data.error_description || data.msg || data.message || data.error || 'Неизвестная ошибка';
+            showErr(errMsg);
             btn.disabled = false;
             btn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
             return;
@@ -207,12 +208,7 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
 
         localStorage.setItem('jx_s', JSON.stringify(data));
 
-        if (!isLogin && data.user?.id) {
-            await sbApi('/rest/v1/profiles', 'POST', {
-                id: data.user.id, username: username, license_key: ''
-            });
-        }
-
+        // Профиль уже создан триггером handle_new_user() — не создаём дубликат
         const userId = data.user?.id;
         let user = { username: username, license_key: '' };
         if (userId) {
