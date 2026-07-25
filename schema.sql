@@ -25,35 +25,15 @@ CREATE POLICY "Users can update own profile"
     ON profiles FOR UPDATE
     USING (auth.uid() = id);
 
--- 3. Автоматическое создание профиля при регистрации
+-- 3. Автоматическое создание профиля при регистрации (БЕЗ ключа — ключ выдаёт админ)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
-DECLARE
-    chars TEXT := 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    key TEXT := 'JX-';
-    i INT;
 BEGIN
-    FOR i IN 1 LOOP
-        key := key || upper(
-            substr(chars, 1 + (random() * length(chars))::int, 4) || '-' ||
-            substr(chars, 1 + (random() * length(chars))::int, 4) || '-' ||
-            substr(chars, 1 + (random() * length(chars))::int, 4)
-        );
-    END LOOP;
-
-    -- Повторяем если ключ уже существует (крайне маловероятно)
-    WHILE EXISTS (SELECT 1 FROM public.profiles WHERE license_key = key) LOOP
-        key := 'JX-' ||
-            substr(chars, 1 + (random() * length(chars))::int, 4) || '-' ||
-            substr(chars, 1 + (random() * length(chars))::int, 4) || '-' ||
-            substr(chars, 1 + (random() * length(chars))::int, 4);
-    END LOOP;
-
     INSERT INTO public.profiles (id, username, license_key)
     VALUES (
         new.id,
         COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)),
-        key
+        NULL
     );
     RETURN new;
 END;
