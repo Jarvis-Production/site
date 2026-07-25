@@ -179,7 +179,9 @@ async function sbApi(endpoint, method, body) {
     const cfg = { method, headers: h };
     if (body) cfg.body = JSON.stringify(body);
     const r = await fetch(SB_URL + endpoint, cfg);
-    return { ok: r.ok, data: await r.json() };
+    let data = {};
+    try { data = await r.json(); } catch(e) { data = {}; }
+    return { ok: r.ok, data };
 }
 
 document.getElementById('authForm').addEventListener('submit', async function(e) {
