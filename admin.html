@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jartix — Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:#0a0c12;color:#e8eaef;min-height:100vh;padding:20px}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding:16px 20px;border-radius:12px;background:rgba(18,21,30,0.8)}
+        .header h1{font-family:'Manrope',sans-serif;font-size:22px}
+        .tabs{display:flex;gap:8px;margin-bottom:20px}
+        .tab{padding:8px 20px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);cursor:pointer;font-size:13px;color:rgba(255,255,255,0.5);transition:all 0.2s}
+        .tab.active{background:rgba(99,130,255,0.15);border-color:rgba(99,130,255,0.3);color:#6382FF}
+        .tab:hover{background:rgba(255,255,255,0.08)}
+        .card{border-radius:12px;padding:20px;margin-bottom:12px;background:rgba(18,21,30,0.65);border:1px solid rgba(255,255,255,0.06)}
+        .card h3{font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th{text-align:left;padding:8px 12px;color:rgba(255,255,255,0.4);border-bottom:1px solid rgba(255,255,255,0.08);font-weight:500}
+        td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.7)}
+        tr:hover td{background:rgba(255,255,255,0.03)}
+        .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600}
+        .badge-green{background:rgba(52,211,153,0.15);color:#34d399}
+        .badge-blue{background:rgba(99,130,255,0.15);color:#6382FF}
+        .badge-gray{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5)}
+        .stat-row{display:flex;gap:12px;margin-bottom:16px}
+        .stat{flex:1;padding:16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)}
+        .stat .label{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:4px}
+        .stat .value{font-family:'Manrope',sans-serif;font-size:24px;font-weight:700}
+        .input{width:100%;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#fff;font-size:13px;font-family:'Inter',sans-serif;outline:none}
+        .input:focus{border-color:#6382FF}
+        .btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:500}
+        .btn-primary{background:#6382FF;color:#0a0c12}
+        .btn-danger{background:rgba(248,113,113,0.15);color:#f87171}
+        .btn-sm{padding:4px 10px;font-size:11px}
+        .filters{display:flex;gap:8px;margin-bottom:16px;align-items:center}
+        .hidden{display:none}
+        #status{font-size:11px;color:rgba(255,255,255,0.3);margin-top:8px}
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Jartix Admin</h1>
+    <button class="btn btn-danger" onclick="location.reload()">Обновить</button>
+</div>
+
+<div class="tabs">
+    <div class="tab active" onclick="showTab('telemetry')">Телеметрия</div>
+    <div class="tab" onclick="showTab('users')">Юзеры</div>
+    <div class="tab" onclick="showTab('keys')">Ключи</div>
+</div>
+
+<!-- TELEMETRY TAB -->
+<div id="tab-telemetry">
+    <div class="stat-row">
+        <div class="stat"><div class="label">Всего подключений</div><div class="value" id="stat-total">...</div></div>
+        <div class="stat"><div class="label">Уникальных HWID</div><div class="value" id="stat-unique">...</div></div>
+        <div class="stat"><div class="label">Сейчас онлайн</div><div class="value" id="stat-online">...</div></div>
+    </div>
+
+    <div class="card">
+        <h3>Последние подключения</h3>
+        <div class="filters">
+            <input class="input" id="filter-server" placeholder="Фильтр по серверу..." style="width:200px" oninput="loadTelemetry()">
+            <input class="input" id="filter-hwid" placeholder="Фильтр по HWID..." style="width:200px" oninput="loadTelemetry()">
+            <button class="btn btn-primary btn-sm" onclick="loadTelemetry()">Обновить</button>
+        </div>
+        <table>
+            <thead><tr><th>HWID</th><th>Сервер</th><th>IP</th><th>Бренд</th><th>Время</th></tr></thead>
+            <tbody id="telemetry-body"></tbody>
+        </table>
+        <div id="status"></div>
+    </div>
+</div>
+
+<!-- USERS TAB -->
+<div id="tab-users" class="hidden">
+    <div class="card">
+        <h3>Юзеры</h3>
+        <div class="filters">
+            <input class="input" id="user-search" placeholder="Поиск по username..." style="width:250px" oninput="loadUsers()">
+            <button class="btn btn-primary btn-sm" onclick="loadUsers()">Обновить</button>
+        </div>
+        <table>
+            <thead><tr><th>Username</th><th>Email</th><th>Ключ</th><th>HWID</th><th>Создан</th><th>Действия</th></tr></thead>
+            <tbody id="users-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- KEYS TAB -->
+<div id="tab-keys" class="hidden">
+    <div class="card">
+        <h3>Генерация ключей</h3>
+        <div class="filters" style="flex-direction:column;gap:12px;max-width:400px">
+            <div>
+                <label style="font-size:12px;color:rgba(255,255,255,0.4)">UUID юзера</label>
+                <input class="input" id="key-uuid" placeholder="UUID из Supabase">
+            </div>
+            <div>
+                <label style="font-size:12px;color:rgba(255,255,255,0.4)">Ключ (формат JX-XXXXX-XXXXX-XXXXX-XXXXX)</label>
+                <input class="input" id="key-value" placeholder="JX-XXXXX-XXXXX-XXXXX-XXXXX" style="text-transform:uppercase">
+            </div>
+            <button class="btn btn-primary" onclick="assignKey()">Присвоить ключ</button>
+            <div id="key-status" style="font-size:12px;margin-top:8px"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Сгенерировать ключ</h3>
+        <div class="filters">
+            <button class="btn btn-primary btn-sm" onclick="generateKey()">Сгенерировать</button>
+            <span id="gen-key" style="font-family:monospace;color:#6382FF;font-size:13px"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+const SB_URL = 'https://ijbarjipnwyzjbskicpy.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYmFyamlwbnd5empic2tpY3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjI3NDAsImV4cCI6MjEwMDE5ODc0MH0.zjv7I13UfkZjgrdsWTg196vD0K8p1iiyJls0yuFl704';
+
+async function sbQuery(endpoint) {
+    const r = await fetch(SB_URL + endpoint, {
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+    return r.json();
+}
+
+function showTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.add('hidden'));
+    event.target.classList.add('active');
+    document.getElementById('tab-' + name).classList.remove('hidden');
+    if (name === 'telemetry') loadTelemetry();
+    if (name === 'users') loadUsers();
+}
+
+// TELEMETRY
+async function loadTelemetry() {
+    const body = document.getElementById('telemetry-body');
+    body.innerHTML = '<tr><td colspan="5" style="color:rgba(255,255,255,0.3)">Загрузка...</td></tr>';
+
+    let query = '/rest/v1/telemetry_logs?order=timestamp.desc&limit=100';
+    const serverFilter = document.getElementById('filter-server')?.value;
+    const hwidFilter = document.getElementById('filter-hwid')?.value;
+    if (serverFilter) query += '&server=like.*' + encodeURIComponent(serverFilter) + '*';
+    if (hwidFilter) query += '&hwid=like.*' + encodeURIComponent(hwidFilter) + '*';
+
+    try {
+        const data = await sbQuery(query);
+        if (!data || data.error) { body.innerHTML = '<tr><td colspan="5">Ошибка: ' + (data?.error?.message || 'Unknown') + '</td></tr>'; return; }
+
+        document.getElementById('stat-total').textContent = data.length;
+
+        const uniqueHwids = new Set(data.map(r => r.hwid));
+        document.getElementById('stat-unique').textContent = uniqueHwids.size;
+
+        const recent = data.filter(r => Date.now() - r.timestamp < 300000);
+        document.getElementById('stat-online').textContent = recent.length;
+
+        body.innerHTML = data.map(r => {
+            const time = new Date(r.timestamp).toLocaleString('ru-RU');
+            return `<tr><td><code style="font-size:10px">${r.hwid?.substring(0,16)}...</code></td><td>${r.server}</td><td>${r.ip}</td><td>${r.brand}</td><td>${time}</td></tr>`;
+        }).join('');
+    } catch(e) {
+        body.innerHTML = '<tr><td colspan="5">Ошибка: ' + e.message + '</td></tr>';
+    }
+}
+
+// USERS
+async function loadUsers() {
+    const body = document.getElementById('users-body');
+    body.innerHTML = '<tr><td colspan="6" style="color:rgba(255,255,255,0.3)">Загрузка...</td></tr>';
+
+    let query = '/rest/v1/profiles?select=*,auth_users:id,email,username&order=created_at.desc&limit=100';
+    const search = document.getElementById('user-search')?.value;
+    if (search) query += '&username=like.*' + encodeURIComponent(search) + '*';
+
+    try {
+        const data = await sbQuery(query);
+        if (!data || data.error) { body.innerHTML = '<tr><td colspan="6">Ошибка: ' + (data?.error?.message || 'Unknown') + '</td></tr>'; return; }
+
+        body.innerHTML = data.map(r => {
+            const key = r.license_key ? `<code style="font-size:10px">${r.license_key}</code>` : '<span style="color:rgba(255,255,255,0.2)">нет</span>';
+            const hwid = r.hwid ? `<code style="font-size:10px">${r.hwid.substring(0,16)}...</code>` : '<span style="color:rgba(255,255,255,0.2)">нет</span>';
+            const created = r.created_at ? new Date(r.created_at).toLocaleDateString('ru-RU') : '-';
+            return `<tr><td>${r.username || '-'}</td><td>${r.auth_users?.email || '-'}</td><td>${key}</td><td>${hwid}</td><td>${created}</td><td><button class="btn btn-danger btn-sm" onclick="deleteUser('${r.id}')">Удалить</button></td></tr>`;
+        }).join('');
+    } catch(e) {
+        body.innerHTML = '<tr><td colspan="6">Ошибка: ' + e.message + '</td></tr>';
+    }
+}
+
+async function deleteUser(id) {
+    if (!confirm('Удалить юзера?')) return;
+    await sbQuery('/rest/v1/profiles?id=eq.' + id, 'DELETE');
+    loadUsers();
+}
+
+// KEYS
+function generateKey() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let key = 'JX-';
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 5; j++) key += chars[Math.floor(Math.random() * chars.length)];
+        if (i < 3) key += '-';
+    }
+    document.getElementById('gen-key').textContent = key;
+}
+
+async function assignKey() {
+    const uuid = document.getElementById('key-uuid').value.trim();
+    const key = document.getElementById('key-value').value.trim().toUpperCase();
+    const status = document.getElementById('key-status');
+
+    if (!uuid || !key) { status.textContent = 'Заполни UUID и ключ'; status.style.color = '#f87171'; return; }
+    if (!/^JX-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(key)) {
+        status.textContent = 'Неверный формат ключа'; status.style.color = '#f87171'; return;
+    }
+
+    try {
+        const data = await sbQuery('/rest/v1/profiles?id=eq.' + uuid);
+        if (!data || !data[0]) { status.textContent = 'Юзер не найден'; status.style.color = '#f87171'; return; }
+
+        await sbQuery('/rest/v1/profiles?id=eq.' + uuid);
+        const r = await fetch(SB_URL + '/rest/v1/profiles?id=eq.' + uuid, {
+            method: 'PATCH',
+            headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ license_key: key })
+        });
+        if (r.ok) { status.textContent = 'Ключ присвоен!'; status.style.color = '#34d399'; }
+        else { status.textContent = 'Ошибка: ' + r.status; status.style.color = '#f87171'; }
+    } catch(e) {
+        status.textContent = 'Ошибка: ' + e.message; status.style.color = '#f87171';
+    }
+}
+
+// Auto-load telemetry on page load
+loadTelemetry();
+</script>
+</body>
+</html>
