@@ -51,19 +51,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 5. Функция генерации ключей (для админа)
+-- 5. Функция генерации ключей (формат: JX-XXXXX-XXXXX-XXXXX-XXXXX)
 CREATE OR REPLACE FUNCTION generate_key()
 RETURNS TEXT AS $$
 DECLARE
     chars TEXT := 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    result TEXT := '';
+    result TEXT := 'JX-';
     i INT;
+    j INT;
 BEGIN
-    FOR i IN 1..16 LOOP
-        IF i > 1 AND (i - 1) % 4 = 0 THEN
+    FOR i IN 1..4 LOOP
+        FOR j IN 1..5 LOOP
+            result := result || substr(chars, 1 + (random() * length(chars))::int, 1);
+        END LOOP;
+        IF i < 4 THEN
             result := result || '-';
         END IF;
-        result := result || substr(chars, floor(random() * length(chars) + 1)::int, 1);
     END LOOP;
     RETURN result;
 END;
