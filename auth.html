@@ -1,314 +1,229 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <meta name="theme-color" content="#0a0c12">
-    <title>Jartix — Личный кабинет</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', system-ui, sans-serif; background: #0a0c12;
-            color: #e8eaef; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-        }
-        .container { width: 100%; max-width: 420px; padding: 24px; }
-        .card {
-            border-radius: 20px; padding: 36px 28px;
-            background: rgba(18, 21, 30, 0.65);
-            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06);
-        }
-        .logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 28px; }
-        .logo-icon {
-            width: 38px; height: 38px; border-radius: 10px;
-            background: #6382FF; display: flex; align-items: center; justify-content: center;
-            font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 17px; color: #0a0c12;
-        }
-        .logo-text { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.9); }
-        .title { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 6px; }
-        .subtitle { text-align: center; color: rgba(255,255,255,0.35); font-size: 13px; margin-bottom: 24px; }
-        .form-group { margin-bottom: 14px; }
-        .form-label { display: block; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.45); margin-bottom: 5px; }
-        .form-input {
-            width: 100%; padding: 11px 14px; border-radius: 10px;
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            color: #fff; font-size: 14px; font-family: 'Inter', sans-serif;
-            transition: all 0.2s; outline: none;
-        }
-        .form-input:focus { border-color: #6382FF; box-shadow: 0 0 0 3px rgba(99,130,255,0.12); }
-        .form-input::placeholder { color: rgba(255,255,255,0.18); }
-        .btn {
-            width: 100%; padding: 13px; border-radius: 12px; font-weight: 600;
-            font-size: 14px; border: none; cursor: pointer; font-family: 'Inter', sans-serif;
-            transition: all 0.2s; margin-top: 4px; text-decoration: none; display: inline-block; text-align: center;
-        }
-        .btn-primary { background: #6382FF; color: #0a0c12; }
-        .btn-primary:hover { background: #7b94ff; }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-outline { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.08); }
-        .btn-outline:hover { background: rgba(255,255,255,0.1); color: #fff; }
-        .msg { padding: 10px 14px; border-radius: 8px; font-size: 12px; margin-bottom: 14px; display: none; }
-        .msg.err { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); color: #f87171; }
-        .msg.ok { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); color: #34d399; }
-        .footer { text-align: center; margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.3); }
-        .footer a { color: #6382FF; text-decoration: none; cursor: pointer; }
-        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid transparent; border-top-color: currentColor; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<meta name="theme-color" content="#0a0b12">
+<title>JARTIX — Личный кабинет</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b12;--peri:#8b93ff;--peri2:#9a86f5;--grad:linear-gradient(135deg,#8b93ff,#9a86f5);
+  --txt:#e9ebf4;--muted:#9aa0bc;--dim:#666c8c;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.12);
+  --ok:#4fd18b;--err:#ff6b6b;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(900px 600px at 78% -8%,rgba(120,110,255,.14),transparent 60%),
+             radial-gradient(700px 500px at 15% 110%,rgba(150,120,255,.10),transparent 60%),
+             linear-gradient(180deg,#0e0f18,var(--bg));padding:24px;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(139,147,255,.35)}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wrap{width:100%;max-width:400px}
+.card{background:rgba(20,22,31,.82);backdrop-filter:blur(22px);border:1px solid var(--line);border-radius:24px;
+  padding:38px 32px;box-shadow:0 30px 80px rgba(0,0,0,.5);animation:pop .45s cubic-bezier(.2,.7,.3,1) both}
+.logo{display:flex;align-items:center;gap:11px;justify-content:center;margin-bottom:24px}
+.logo .b{width:44px;height:44px;border-radius:13px;background:var(--grad);display:flex;align-items:center;justify-content:center;
+  font-family:'Manrope';font-weight:800;font-size:22px;color:#fff;box-shadow:0 10px 30px rgba(124,124,255,.5)}
+.logo .t{font-family:'Manrope';font-weight:800;font-size:22px;letter-spacing:.5px}
+h1{font-family:'Manrope';font-size:23px;text-align:center;font-weight:700}
+.sub{text-align:center;color:var(--muted);font-size:13px;margin:6px 0 24px}
+.grp{margin-bottom:14px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}
+input{width:100%;padding:13px 15px;border-radius:12px;background:#0c0e16;border:1px solid var(--line2);color:var(--txt);
+  font-size:14px;outline:none;transition:.18s}
+input:focus{border-color:var(--peri);box-shadow:0 0 0 3px rgba(139,147,255,.16)}
+input::placeholder{color:#4a4f6b}
+.btn{width:100%;padding:14px;border-radius:13px;font-weight:600;font-size:15px;cursor:pointer;border:none;color:#fff;
+  background:var(--grad);transition:.18s;box-shadow:0 10px 28px rgba(124,124,255,.3);font-family:inherit}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(124,124,255,.45)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.6;cursor:default;transform:none}
+.btn.ghost{background:rgba(255,255,255,.05);border:1px solid var(--line2);box-shadow:none;color:var(--muted)}
+.btn.ghost:hover{background:rgba(255,255,255,.09);color:var(--txt);transform:none}
+.msg{padding:11px 14px;border-radius:10px;font-size:12.5px;margin-bottom:14px;display:none}
+.msg.err{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.25);color:#ff9d9d;display:block}
+.msg.ok{background:rgba(79,209,139,.1);border:1px solid rgba(79,209,139,.25);color:#7fe3ac;display:block}
+.foot{text-align:center;margin-top:16px;font-size:13px;color:var(--dim)}
+.foot a{color:var(--peri);text-decoration:none;cursor:pointer}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid transparent;border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:-3px}
 
-        /* Dashboard */
-        .dashboard { display: none; width: 100%; max-width: 420px; padding: 24px; }
-        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .dash-header h1 { font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 700; }
-        .dash-card {
-            border-radius: 14px; padding: 20px; margin-bottom: 12px;
-            background: rgba(18,21,30,0.65); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .dash-card h3 { font-size: 11px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .dash-card .value { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 700; }
-        .key-display {
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px; padding: 14px; margin-top: 10px;
-            font-family: monospace; font-size: 13px; color: #6382FF; word-break: break-all;
-        }
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-        .badge-green { background: rgba(52,211,153,0.1); color: #34d399; }
-        .badge-red { background: rgba(248,113,113,0.1); color: #f87171; }
-    </style>
+/* dashboard */
+.dcard{background:rgba(20,22,31,.82);backdrop-filter:blur(22px);border:1px solid var(--line);border-radius:18px;
+  padding:20px 22px;margin-bottom:13px;animation:fadeUp .45s both}
+.dcard:nth-child(2){animation-delay:.05s}.dcard:nth-child(3){animation-delay:.1s}.dcard:nth-child(4){animation-delay:.15s}
+.dhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;animation:fadeUp .4s both}
+.dhead h1{font-size:22px;text-align:left}
+.dhead .hi{color:var(--muted);font-size:13px}
+.lab{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.big{font-family:'Manrope';font-size:20px;font-weight:700}
+.lic{display:flex;align-items:center;gap:10px}
+.lic .icn{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.lic.on .icn{background:rgba(79,209,139,.15)}.lic.off .icn{background:rgba(255,179,71,.15)}
+.lic .st{font-family:'Manrope';font-weight:700;font-size:16px}
+.lic .exp{color:var(--muted);font-size:12.5px}
+.keybox{display:flex;align-items:center;gap:10px;background:#0c0e16;border:1px solid var(--line2);border-radius:12px;
+  padding:13px 15px;margin-top:4px}
+.keybox code{font-family:Consolas,monospace;font-size:13.5px;color:var(--peri);flex:1;word-break:break-all;letter-spacing:.5px}
+.copy{background:rgba(139,147,255,.15);border:1px solid rgba(139,147,255,.3);color:#cfd4ff;border-radius:9px;padding:7px 12px;
+  font-size:12px;cursor:pointer;white-space:nowrap;transition:.15s}
+.copy:hover{background:rgba(139,147,255,.28)}
+.hint{color:var(--dim);font-size:11.5px;margin-top:8px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge.g{background:rgba(79,209,139,.15);color:#7fe3ac}.badge.r{background:rgba(255,107,107,.15);color:#ff9d9d}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#191c28;border:1px solid var(--line2);
+  border-left:3px solid var(--ok);border-radius:12px;padding:12px 20px;font-size:13.5px;display:none;animation:fadeUp .25s both;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+</style>
 </head>
 <body>
 
-<!-- Auth -->
-<div class="container" id="authScreen">
-    <div class="card">
-        <div class="logo">
-            <span class="logo-icon">J</span>
-            <span class="logo-text">jartix</span>
-        </div>
-        <div class="title" id="formTitle">Регистрация</div>
-        <div class="subtitle" id="formSubtitle">Создайте аккаунт для доступа к клиенту</div>
-        <div class="msg err" id="errMsg"></div>
-        <div class="msg ok" id="okMsg"></div>
-        <form id="authForm">
-            <div class="form-group" id="usernameGrp">
-                <label class="form-label">Имя пользователя</label>
-                <input type="text" class="form-input" id="username" placeholder="Username">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-input" id="email" placeholder="your@email.com" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Пароль</label>
-                <input type="password" class="form-input" id="password" placeholder="Минимум 6 символов" required minlength="6">
-            </div>
-            <button type="submit" class="btn btn-primary" id="submitBtn">Создать аккаунт</button>
-        </form>
-        <p class="footer" id="switchTxt">Уже есть аккаунт? <a onclick="toggleMode()">Войти</a></p>
-        <p class="footer"><a href="index.html">← На главную</a></p>
-    </div>
+<!-- AUTH -->
+<div class="wrap" id="authScreen">
+  <div class="card">
+    <div class="logo"><div class="b">J</div><div class="t">JARTIX</div></div>
+    <h1 id="formTitle">Регистрация</h1>
+    <div class="sub" id="formSub">Создай аккаунт — ключ выдаётся автоматически</div>
+    <div class="msg" id="msg"></div>
+    <form id="authForm">
+      <div class="grp" id="userGrp">
+        <label>Имя пользователя</label>
+        <input type="text" id="username" placeholder="ник в игре" autocomplete="username">
+      </div>
+      <div class="grp"><label>Email</label><input type="email" id="email" placeholder="your@email.com" required autocomplete="email"></div>
+      <div class="grp"><label>Пароль</label><input type="password" id="password" placeholder="минимум 6 символов" required minlength="6" autocomplete="current-password"></div>
+      <button type="submit" class="btn" id="submitBtn">Создать аккаунт</button>
+    </form>
+    <p class="foot" id="switch">Уже есть аккаунт? <a onclick="toggleMode()">Войти</a></p>
+    <p class="foot"><a href="index.html">← На главную</a></p>
+  </div>
 </div>
 
-<!-- Dashboard -->
-<div class="dashboard" id="dashboard">
-    <div class="dash-header">
-        <h1>Кабинет</h1>
-        <button class="btn btn-outline" style="width:auto; padding:8px 16px; font-size:12px;" onclick="doLogout()">Выйти</button>
-    </div>
+<!-- DASHBOARD -->
+<div class="wrap" id="dashboard" style="display:none">
+  <div class="dhead">
+    <div><h1>Кабинет</h1><div class="hi" id="hiUser">—</div></div>
+    <button class="btn ghost" style="width:auto;padding:9px 16px;font-size:13px" onclick="doLogout()">Выйти</button>
+  </div>
 
-    <div class="dash-card">
-        <h3>Пользователь</h3>
-        <div class="value" id="dUser">—</div>
-    </div>
+  <div class="dcard">
+    <div class="lab">Статус лицензии</div>
+    <div class="lic" id="licBox"><div class="icn">⏳</div><div><div class="st">—</div><div class="exp"></div></div></div>
+    <a id="buyBtn" href="https://t.me/kuzmanx" target="_blank" class="btn" style="margin-top:14px;display:none">Купить лицензию</a>
+  </div>
 
-    <!-- Нет ключа -->
-    <div class="dash-card" id="noKeySection">
-        <h3>Лицензия</h3>
-        <p style="font-size:13px; color:rgba(255,255,255,0.4); margin:8px 0 16px;">У вас нет активной лицензии. Купите или активируйте ключ.</p>
-        <a href="https://t.me/kuzmanx" target="_blank" class="btn btn-primary" style="margin-bottom:8px;">Купить лицензию</a>
-        <button class="btn btn-outline" onclick="document.getElementById('activateGrp').style.display='block'" style="margin-top:8px;">У меня есть ключ</button>
-        <div id="activateGrp" style="display:none; margin-top:12px;">
-            <div class="form-group">
-                <label class="form-label">Введите ключ</label>
-                <input type="text" class="form-input" id="actKey" placeholder="JX-XXXX-XXXX-XXXX" style="text-transform:uppercase;">
-            </div>
-            <button class="btn btn-primary" id="actBtn" onclick="activateKey()">Активировать</button>
-            <div class="msg err" id="actErr" style="margin-top:8px;"></div>
-        </div>
-    </div>
+  <div class="dcard">
+    <div class="lab">Твой лицензионный ключ</div>
+    <div class="keybox"><code id="dKey">—</code><button class="copy" onclick="copyKey()">Копировать</button></div>
+    <div class="hint">Введи этот ключ в лаунчере для входа</div>
+  </div>
 
-    <!-- Есть ключ -->
-    <div class="dash-card" id="hasKeySection" style="display:none;">
-        <h3>Лицензионный ключ</h3>
-        <div class="key-display" id="dKey">—</div>
-        <p style="font-size:11px; color:rgba(255,255,255,0.25); margin-top:6px;">Введите в лаунчере для активации</p>
-        <button class="btn btn-outline" style="margin-top:10px; font-size:11px; padding:6px 14px; width:auto;" onclick="clearKey()">Удалить ключ</button>
-    </div>
-
-    <div class="dash-card">
-        <h3>Скачать лаунчер</h3>
-        <a href="https://github.com/Jarvis-Production/site/raw/refs/heads/main/Jartix.exe" target="_blank" class="btn btn-primary" style="margin-top:8px;">Скачать Jartix.exe</a>
-    </div>
+  <div class="dcard">
+    <div class="lab">Лаунчер</div>
+    <a href="https://github.com/Jarvis-Production/site/raw/refs/heads/main/Jartix.exe" class="btn" style="margin-top:4px">⬇ Скачать Jartix.exe</a>
+  </div>
 </div>
+
+<div id="toast"></div>
 
 <script>
-const SB_URL = 'https://ijbarjipnwyzjbskicpy.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYmFyamlwbnd5empic2tpY3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjI3NDAsImV4cCI6MjEwMDE5ODc0MH0.zjv7I13UfkZjgrdsWTg196vD0K8p1iiyJls0yuFl704';
+const SB_URL='https://ijbarjipnwyzjbskicpy.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYmFyamlwbnd5empic2tpY3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjI3NDAsImV4cCI6MjEwMDE5ODc0MH0.zjv7I13UfkZjgrdsWTg196vD0K8p1iiyJls0yuFl704';
+let isLogin=false, curKey='';
 
-let isLogin = false;
+function toggleMode(){isLogin=!isLogin;
+  formTitle.textContent=isLogin?'Вход':'Регистрация';
+  formSub.textContent=isLogin?'Войди в свой аккаунт':'Создай аккаунт — ключ выдаётся автоматически';
+  userGrp.style.display=isLogin?'none':'block';
+  submitBtn.textContent=isLogin?'Войти':'Создать аккаунт';
+  switch_.innerHTML=isLogin?'Нет аккаунта? <a onclick="toggleMode()">Зарегистрироваться</a>':'Уже есть аккаунт? <a onclick="toggleMode()">Войти</a>';
+  hideMsg();}
+const switch_=document.getElementById('switch');
+function showMsg(m,ok){msg.textContent=m;msg.className='msg '+(ok?'ok':'err');}
+function hideMsg(){msg.className='msg';msg.textContent='';}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',1800);}
 
-function toggleMode() {
-    isLogin = !isLogin;
-    document.getElementById('formTitle').textContent = isLogin ? 'Вход' : 'Регистрация';
-    document.getElementById('formSubtitle').textContent = isLogin ? 'Войдите в свой аккаунт' : 'Создайте аккаунт для доступа к клиенту';
-    document.getElementById('usernameGrp').style.display = isLogin ? 'none' : 'block';
-    document.getElementById('submitBtn').textContent = isLogin ? 'Войти' : 'Создать аккаунт';
-    document.getElementById('switchTxt').innerHTML = isLogin ? 'Нет аккаунта? <a onclick="toggleMode()">Зарегистрироваться</a>' : 'Уже есть аккаунт? <a onclick="toggleMode()">Войти</a>';
-    hideMsg();
+async function sb(ep,method,body){
+  const h={apikey:SB_KEY,'Content-Type':'application/json'};
+  const s=JSON.parse(localStorage.getItem('jx_s')||'null');
+  if(s?.access_token)h.Authorization='Bearer '+s.access_token;
+  const cfg={method,headers:h};if(body)cfg.body=JSON.stringify(body);
+  const r=await fetch(SB_URL+ep,cfg);let d={};try{d=await r.json()}catch{}
+  return{ok:r.ok,d};
 }
 
-function showErr(m) { document.getElementById('errMsg').textContent = m; document.getElementById('errMsg').style.display = 'block'; document.getElementById('okMsg').style.display = 'none'; }
-function showOk(m) { document.getElementById('okMsg').textContent = m; document.getElementById('okMsg').style.display = 'block'; document.getElementById('errMsg').style.display = 'none'; }
-function hideMsg() { document.getElementById('errMsg').style.display = 'none'; document.getElementById('okMsg').style.display = 'none'; }
-
-async function sbApi(endpoint, method, body) {
-    const h = { 'apikey': SB_KEY, 'Content-Type': 'application/json' };
-    const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
-    if (s?.access_token) h['Authorization'] = 'Bearer ' + s.access_token;
-    const cfg = { method, headers: h };
-    if (body) cfg.body = JSON.stringify(body);
-    const r = await fetch(SB_URL + endpoint, cfg);
-    let data = {};
-    try { data = await r.json(); } catch(e) { data = {}; }
-    return { ok: r.ok, data };
-}
-
-document.getElementById('authForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    hideMsg();
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>';
-
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const username = document.getElementById('username').value || email.split('@')[0];
-
-    try {
-        const ep = isLogin ? '/auth/v1/token?grant_type=password' : '/auth/v1/signup';
-        const body = isLogin ? { email, password } : { email, password, data: { username } };
-        const { ok, data } = await sbApi(ep, 'POST', body);
-
-        if (!ok || !data.access_token) {
-            const errMsg = data.error_description || data.msg || data.message || data.error || JSON.stringify(data) || 'Неизвестная ошибка';
-            showErr(errMsg);
-            btn.disabled = false;
-            btn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
-            return;
-        }
-
-        localStorage.setItem('jx_s', JSON.stringify(data));
-
-        // Профиль уже создан триггером handle_new_user() — не создаём дубликат
-        const userId = data.user?.id;
-        let user = { username: username, license_key: '' };
-        if (userId) {
-            const { data: p } = await sbApi('/rest/v1/profiles?id=eq.' + userId + '&select=*', 'GET');
-            if (p?.[0]) user = p[0];
-        }
-        showDash(user);
-    } catch (err) {
-        const msg = err.message === 'Failed to fetch' ? 'Не удалось подключиться к серверу. Проверьте интернет или попробуйте позже.' : 'Ошибка: ' + err.message;
-        showErr(msg);
-        btn.disabled = false;
-        btn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
+document.getElementById('authForm').addEventListener('submit',async e=>{
+  e.preventDefault();hideMsg();
+  submitBtn.disabled=true;const lbl=submitBtn.textContent;submitBtn.innerHTML='<span class="spinner"></span>';
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const username=document.getElementById('username').value.trim()||email.split('@')[0];
+  try{
+    const ep=isLogin?'/auth/v1/token?grant_type=password':'/auth/v1/signup';
+    const body=isLogin?{email,password}:{email,password,data:{username}};
+    const {ok,d}=await sb(ep,'POST',body);
+    if(!ok||!d.access_token){
+      showMsg(d.error_description||d.msg||d.message||d.error||'Не удалось. Возможно, нужно подтвердить email.');
+      submitBtn.disabled=false;submitBtn.textContent=lbl;return;
     }
+    localStorage.setItem('jx_s',JSON.stringify(d));
+    await loadProfile(d.user?.id, username);
+  }catch(err){
+    showMsg(err.message==='Failed to fetch'?'Нет связи с сервером. Проверь интернет.':'Ошибка: '+err.message);
+    submitBtn.disabled=false;submitBtn.textContent=lbl;
+  }
 });
 
-function showDash(user) {
-    document.getElementById('authScreen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('dUser').textContent = user.username || 'User';
-
-    if (user.license_key && user.license_key.trim() !== '') {
-        document.getElementById('noKeySection').style.display = 'none';
-        document.getElementById('hasKeySection').style.display = 'block';
-        document.getElementById('dKey').textContent = user.license_key;
-    } else {
-        document.getElementById('noKeySection').style.display = 'block';
-        document.getElementById('hasKeySection').style.display = 'none';
+async function loadProfile(id, fallbackName){
+  let user={username:fallbackName||'User',license_key:'',license_active:false,active:true,banned:false,expires_at:null};
+  if(id){
+    // small retry — the DB trigger issues the key a moment after signup
+    for(let i=0;i<4;i++){
+      const {d}=await sb('/rest/v1/profiles?id=eq.'+id+'&select=*','GET');
+      if(d?.[0]){user=d[0];if(user.license_key)break;}
+      await new Promise(s=>setTimeout(s,600));
     }
+  }
+  showDash(user);
 }
 
-async function activateKey() {
-    const key = document.getElementById('actKey').value.trim().toUpperCase();
-    const errEl = document.getElementById('actErr');
-    errEl.style.display = 'none';
+function showDash(u){
+  authScreen.style.display='none';dashboard.style.display='block';
+  hiUser.textContent='Привет, '+(u.username||'User');
+  curKey=u.license_key||'';
+  dKey.textContent=curKey||'ключ выдаётся…';
 
-    if (!key) { errEl.textContent = 'Введите ключ'; errEl.style.display = 'block'; return; }
-
-    const btn = document.getElementById('actBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>';
-
-    try {
-        // Validate key format locally (JX-XXXX-XXXX-XXXX)
-        if (!/^JX-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(key)) {
-            errEl.textContent = 'Неверный формат ключа';
-            errEl.style.display = 'block';
-            btn.disabled = false;
-            btn.textContent = 'Активировать';
-            return;
-        }
-
-        // Save key to profile — HWID binding happens in the launcher
-        const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
-        if (!s?.user?.id) { errEl.textContent = 'Ошибка сессии'; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Активировать'; return; }
-
-        await sbApi('/rest/v1/profiles?id=eq.' + s.user.id, 'PATCH', { license_key: key });
-
-        // Update dashboard
-        document.getElementById('noKeySection').style.display = 'none';
-        document.getElementById('hasKeySection').style.display = 'block';
-        document.getElementById('dKey').textContent = key;
-        showOk('Лицензия активирована!');
-    } catch (err) {
-        errEl.textContent = 'Ошибка: ' + err.message;
-        errEl.style.display = 'block';
-    }
-    btn.disabled = false;
-    btn.textContent = 'Активировать';
+  const now=Date.now();
+  const active = u.license_active && u.active && !u.banned && (!u.expires_at || new Date(u.expires_at).getTime()>now);
+  const box=document.getElementById('licBox');
+  const buy=document.getElementById('buyBtn');
+  if(u.banned){box.className='lic off';box.innerHTML='<div class="icn">⛔</div><div><div class="st">Аккаунт заблокирован</div><div class="exp">обратись в поддержку</div></div>';buy.style.display='none';}
+  else if(active){
+    box.className='lic on';
+    const exp=u.expires_at?('до '+new Date(u.expires_at).toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'})):'навсегда';
+    box.innerHTML='<div class="icn">✅</div><div><div class="st">Лицензия активна</div><div class="exp">'+exp+'</div></div>';
+    buy.style.display='none';
+  } else {
+    box.className='lic off';
+    box.innerHTML='<div class="icn">🔒</div><div><div class="st">Нет активной лицензии</div><div class="exp">ключ есть — активируй лицензию у админа</div></div>';
+    buy.style.display='block';
+  }
 }
+function copyKey(){if(!curKey)return;navigator.clipboard.writeText(curKey);toast('Ключ скопирован');}
 
-async function clearKey() {
-    if (!confirm('Удалить текущий ключ?')) return;
-    const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
-    if (!s?.user?.id) return;
-    await sbApi('/rest/v1/profiles?id=eq.' + s.user.id, 'PATCH', { license_key: '' });
-    document.getElementById('hasKeySection').style.display = 'none';
-    document.getElementById('noKeySection').style.display = 'block';
-}
+function doLogout(){localStorage.removeItem('jx_s');dashboard.style.display='none';authScreen.style.display='block';
+  isLogin=false;formTitle.textContent='Регистрация';userGrp.style.display='block';submitBtn.disabled=false;
+  submitBtn.textContent='Создать аккаунт';switch_.innerHTML='Уже есть аккаунт? <a onclick="toggleMode()">Войти</a>';hideMsg();}
 
-function doLogout() {
-    localStorage.removeItem('jx_s');
-    document.getElementById('authScreen').style.display = 'block';
-    document.getElementById('dashboard').style.display = 'none';
-    isLogin = false;
-    document.getElementById('formTitle').textContent = 'Регистрация';
-    document.getElementById('usernameGrp').style.display = 'block';
-    document.getElementById('submitBtn').textContent = 'Создать аккаунт';
-    document.getElementById('switchTxt').innerHTML = 'Уже есть аккаунт? <a onclick="toggleMode()">Войти</a>';
-    hideMsg();
-}
-
-window.addEventListener('DOMContentLoaded', async () => {
-    const s = JSON.parse(localStorage.getItem('jx_s') || 'null');
-    if (s?.access_token && s?.user?.id) {
-        const { data } = await sbApi('/rest/v1/profiles?id=eq.' + s.user.id + '&select=*', 'GET');
-        if (data?.[0]) showDash(data[0]);
-    }
+window.addEventListener('DOMContentLoaded',async()=>{
+  const s=JSON.parse(localStorage.getItem('jx_s')||'null');
+  if(s?.access_token&&s?.user?.id){
+    const {d}=await sb('/rest/v1/profiles?id=eq.'+s.user.id+'&select=*','GET');
+    if(d?.[0])showDash(d[0]);
+  }
 });
 </script>
 </body>

@@ -11,11 +11,12 @@
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg: #0a0c12;
-            --card: rgba(18, 21, 30, 0.65);
+            --bg: #0a0b12;
+            --card: rgba(20, 22, 31, 0.65);
             --card-border: rgba(255, 255, 255, 0.06);
-            --primary: #6382FF;
-            --primary-glow: rgba(99, 130, 255, 0.15);
+            --primary: #8b93ff;
+            --primary-glow: rgba(139, 147, 255, 0.15);
+            --grad: linear-gradient(135deg, #8b93ff, #9a86f5);
             --text: #e8eaef;
             --text-dim: rgba(255, 255, 255, 0.4);
             --text-muted: rgba(255, 255, 255, 0.25);
@@ -26,10 +27,17 @@
         }
         html { scroll-behavior: smooth; }
         body {
-            font-family: var(--font); background: var(--bg);
+            font-family: var(--font);
+            background:
+              radial-gradient(1000px 700px at 82% -6%, rgba(120,110,255,.13), transparent 60%),
+              radial-gradient(800px 600px at 10% 8%, rgba(150,120,255,.08), transparent 55%),
+              linear-gradient(180deg, #0e0f18, var(--bg));
+            background-attachment: fixed;
             color: var(--text); -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.2,.7,.3,1), transform .7s cubic-bezier(.2,.7,.3,1); }
+        .reveal.in { opacity: 1; transform: none; }
         .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
         /* ── Glassmorphism base ──────────────────────── */
@@ -60,10 +68,11 @@
         }
         .nav-logo-icon {
             width: 30px; height: 30px; border-radius: 8px;
-            background: var(--primary); display: flex;
+            background: var(--grad); display: flex;
             align-items: center; justify-content: center;
             font-family: var(--font-title); font-weight: 800;
-            font-size: 13px; color: #0a0c12;
+            font-size: 13px; color: #fff;
+            box-shadow: 0 6px 18px rgba(124,124,255,.4);
         }
         .nav-logo-text {
             font-family: var(--font-title); font-size: 16px;
@@ -80,12 +89,13 @@
         .nav-links a svg { width: 16px; height: 16px; opacity: 0.6; }
         .nav-cabinet {
             padding: 8px 18px; border-radius: 50px;
-            background: var(--primary); color: #0a0c12;
+            background: var(--grad); color: #fff;
             font-size: 13px; font-weight: 600; text-decoration: none;
             display: flex; align-items: center; gap: 6px;
             transition: all 0.2s; margin-left: 8px;
+            box-shadow: 0 6px 18px rgba(124,124,255,.35);
         }
-        .nav-cabinet:hover { background: #7b94ff; transform: translateY(-1px); }
+        .nav-cabinet:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
         /* ── Hero ─────────────────────────────────────── */
         .hero {
@@ -117,8 +127,8 @@
             background-clip: text;
         }
         .hero h1 span {
-            -webkit-text-fill-color: var(--primary);
-            background: none;
+            background: var(--grad); -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; color: transparent;
         }
         .hero-sub {
             font-size: 17px; color: var(--text-dim);
@@ -134,12 +144,12 @@
             border: none; cursor: pointer; font-family: var(--font);
         }
         .btn-primary {
-            background: var(--primary); color: #0a0c12;
-            box-shadow: 0 0 30px rgba(99,130,255,0.25);
+            background: var(--grad); color: #fff;
+            box-shadow: 0 10px 30px rgba(124,124,255,0.3);
         }
         .btn-primary:hover {
-            background: #7b94ff; transform: translateY(-2px);
-            box-shadow: 0 0 40px rgba(99,130,255,0.35);
+            filter: brightness(1.08); transform: translateY(-2px);
+            box-shadow: 0 14px 40px rgba(124,124,255,0.45);
         }
         .btn-glass {
             background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7);
@@ -233,7 +243,7 @@
             content: 'ПОПУЛЯРНЫЙ'; position: absolute; top: 0; left: 0; right: 0;
             padding: 6px; text-align: center; font-size: 10px; font-weight: 700;
             letter-spacing: 1.5px; color: #fff;
-            background: var(--primary); border-radius: 20px 20px 0 0;
+            background: var(--grad); border-radius: 20px 20px 0 0;
         }
         .pricing-card.popular { padding-top: 48px; }
         .pricing-card h3 {
@@ -608,6 +618,15 @@
             if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         });
     });
+
+    // Smooth scroll-reveal for cards/sections
+    const revealEls = document.querySelectorAll(
+        '.feature-card, .pricing-card, .step-card, .cta-box, .features-title, .features-sub, .pricing-title, .pricing-sub, .steps-title, .steps-sub');
+    revealEls.forEach((el, i) => { el.classList.add('reveal'); el.style.transitionDelay = (i % 3) * 0.08 + 's'; });
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
 </script>
 
 </body>
