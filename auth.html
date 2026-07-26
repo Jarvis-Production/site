@@ -202,7 +202,7 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
         const { ok, data } = await sbApi(ep, 'POST', body);
 
         if (!ok || !data.access_token) {
-            const errMsg = data.error_description || data.msg || data.message || data.error || 'Неизвестная ошибка';
+            const errMsg = data.error_description || data.msg || data.message || data.error || JSON.stringify(data) || 'Неизвестная ошибка';
             showErr(errMsg);
             btn.disabled = false;
             btn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
