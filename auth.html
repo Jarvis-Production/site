@@ -220,7 +220,8 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
         }
         showDash(user);
     } catch (err) {
-        showErr('Ошибка: ' + err.message);
+        const msg = err.message === 'Failed to fetch' ? 'Не удалось подключиться к серверу. Проверьте интернет или попробуйте позже.' : 'Ошибка: ' + err.message;
+        showErr(msg);
         btn.disabled = false;
         btn.textContent = isLogin ? 'Войти' : 'Создать аккаунт';
     }
