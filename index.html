@@ -1,613 +1,740 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html class="dark" lang="ru" style="color-scheme: dark;">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0a0c12">
-    <title>Jartix — Контроль, скорость и точность</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg: #0a0c12;
-            --card: rgba(18, 21, 30, 0.65);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --primary: #6382FF;
-            --primary-glow: rgba(99, 130, 255, 0.15);
-            --text: #e8eaef;
-            --text-dim: rgba(255, 255, 255, 0.4);
-            --text-muted: rgba(255, 255, 255, 0.25);
-            --glass: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --font: 'Inter', system-ui, sans-serif;
-            --font-title: 'Manrope', system-ui, sans-serif;
-        }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: var(--font); background: var(--bg);
-            color: var(--text); -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-        .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0a0c12">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0c12">
+  <title>Jartix — Контроль, скорость и точность</title>
+  <meta name="description" content="Поднимите свой игровой процесс на новый уровень с нашим клиентом">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ── Glassmorphism base ──────────────────────── */
-        .glass {
-            background: var(--glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-        }
+    :root {
+      --bg: #0a0c12;
+      --bg-delta: #0a0c12;
+      --primary: #6382FF;
+      --primary-rgb: 99, 130, 255;
+      --primary-glow: rgba(99, 130, 255, 0.25);
+      --text: #e8eaef;
+      --font: 'Inter', system-ui, sans-serif;
+      --font-title: 'Manrope', system-ui, sans-serif;
+    }
 
-        /* ── Navbar (floating pill) ──────────────────── */
-        .navbar {
-            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-            z-index: 100; display: flex; align-items: center; gap: 8px;
-            padding: 6px 8px 6px 16px;
-            background: rgba(10, 12, 18, 0.6);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 50px;
-            transition: all 0.4s;
-        }
-        .navbar.scrolled {
-            background: rgba(10, 12, 18, 0.85);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-        .nav-logo {
-            display: flex; align-items: center; gap: 8px;
-            text-decoration: none; color: #fff; margin-right: 12px;
-        }
-        .nav-logo-icon {
-            width: 30px; height: 30px; border-radius: 8px;
-            background: var(--primary); display: flex;
-            align-items: center; justify-content: center;
-            font-family: var(--font-title); font-weight: 800;
-            font-size: 13px; color: #0a0c12;
-        }
-        .nav-logo-text {
-            font-family: var(--font-title); font-size: 16px;
-            font-weight: 700; color: rgba(255,255,255,0.9);
-        }
-        .nav-links { display: flex; gap: 2px; align-items: center; }
-        .nav-links a {
-            display: flex; align-items: center; gap: 6px;
-            padding: 8px 14px; border-radius: 8px;
-            color: rgba(255,255,255,0.45); text-decoration: none;
-            font-size: 13px; font-weight: 500; transition: all 0.2s;
-        }
-        .nav-links a:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.04); }
-        .nav-links a svg { width: 16px; height: 16px; opacity: 0.6; }
-        .nav-cabinet {
-            padding: 8px 18px; border-radius: 50px;
-            background: var(--primary); color: #0a0c12;
-            font-size: 13px; font-weight: 600; text-decoration: none;
-            display: flex; align-items: center; gap: 6px;
-            transition: all 0.2s; margin-left: 8px;
-        }
-        .nav-cabinet:hover { background: #7b94ff; transform: translateY(-1px); }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: white;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
 
-        /* ── Hero ─────────────────────────────────────── */
-        .hero {
-            min-height: 100vh; display: flex; align-items: center;
-            justify-content: center; text-align: center;
-            position: relative; z-index: 1; padding: 100px 24px 60px;
-        }
-        .hero-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; border-radius: 50px;
-            background: var(--primary-glow); border: 1px solid rgba(99,130,255,0.2);
-            font-size: 12px; font-weight: 600; color: var(--primary);
-            margin-bottom: 24px; backdrop-filter: blur(10px);
-        }
-        .hero-badge-dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--primary); animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .hero h1 {
-            font-family: var(--font-title);
-            font-size: clamp(48px, 8vw, 80px); font-weight: 800;
-            line-height: 1.05; letter-spacing: -3px; margin-bottom: 24px;
-            background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero h1 span {
-            -webkit-text-fill-color: var(--primary);
-            background: none;
-        }
-        .hero-sub {
-            font-size: 17px; color: var(--text-dim);
-            max-width: 480px; margin: 0 auto 40px; line-height: 1.7;
-        }
-        .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    /* ═══ Animations ═══════════════════════════════════════════ */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes kenBurns {
+      0% { transform: scale(1) translate(0, 0); }
+      25% { transform: scale(1.05) translate(-1%, -1%); }
+      50% { transform: scale(1.08) translate(0, -2%); }
+      75% { transform: scale(1.05) translate(1%, -1%); }
+      100% { transform: scale(1) translate(0, 0); }
+    }
+    @keyframes gradientText {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes letterReveal {
+      from { opacity: 0; filter: blur(6px); transform: translateY(12px); }
+      to { opacity: 1; filter: blur(0); transform: translateY(0); }
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
 
-        /* ── Buttons ──────────────────────────────────── */
-        .btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 14px 32px; border-radius: 14px; font-weight: 600;
-            font-size: 15px; text-decoration: none; transition: all 0.25s;
-            border: none; cursor: pointer; font-family: var(--font);
-        }
-        .btn-primary {
-            background: var(--primary); color: #0a0c12;
-            box-shadow: 0 0 30px rgba(99,130,255,0.25);
-        }
-        .btn-primary:hover {
-            background: #7b94ff; transform: translateY(-2px);
-            box-shadow: 0 0 40px rgba(99,130,255,0.35);
-        }
-        .btn-glass {
-            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7);
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
-        .btn-glass:hover {
-            background: rgba(255,255,255,0.1); color: #fff;
-            border-color: rgba(255,255,255,0.15);
-            transform: translateY(-1px);
-        }
-        .btn svg { width: 18px; height: 18px; }
+    .animate-fade-in-down { animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-ken-burns { animation: kenBurns 30s ease-in-out infinite; }
+    .gradient-text {
+      background: linear-gradient(135deg, #6382FF, #9BB8FF, #B0C8FF, #9BB8FF, #6382FF);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientText 6s ease infinite;
+    }
+    .letter { display: inline-block; opacity: 0; backface-visibility: hidden; }
+    .letter.revealed {
+      animation: letterReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation-delay: var(--d);
+    }
+    .btn-shimmer { position: relative; overflow: hidden; }
+    .btn-shimmer::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: translateX(-100%);
+    }
+    .btn-shimmer:hover::after { animation: shimmer 0.6s ease; }
 
-        /* ── Features (bento grid) ────────────────────── */
-        .features { padding: 80px 0; position: relative; z-index: 1; }
-        .features-title {
-            font-family: var(--font-title);
-            font-size: 44px; font-weight: 800; text-align: center;
-            margin-bottom: 12px; letter-spacing: -1px;
-        }
-        .features-sub {
-            text-align: center; color: var(--text-dim);
-            font-size: 16px; max-width: 500px; margin: 0 auto 56px;
-        }
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: auto auto;
-            gap: 16px;
-        }
-        .feature-card {
-            border-radius: 20px; padding: 32px;
-            position: relative; overflow: hidden;
-            transition: all 0.3s; cursor: default;
-        }
-        .feature-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255,255,255,0.12);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .feature-card.span-2 { grid-column: span 2; }
-        .feature-card-icon {
-            width: 48px; height: 48px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 20px; background: rgba(99,130,255,0.1);
-            border: 1px solid rgba(99,130,255,0.15);
-        }
-        .feature-card-icon svg { width: 24px; height: 24px; color: var(--primary); }
-        .feature-card h3 {
-            font-family: var(--font-title); font-size: 18px;
-            font-weight: 700; margin-bottom: 10px;
-        }
-        .feature-card p {
-            font-size: 14px; color: var(--text-dim); line-height: 1.65;
-        }
-        .feature-tag {
-            display: inline-block; padding: 4px 10px; border-radius: 6px;
-            font-size: 11px; font-weight: 600; margin-bottom: 16px;
-            background: rgba(99,130,255,0.1); color: var(--primary);
-        }
+    /* ═══ Navbar ═══════════════════════════════════════════════ */
+    .navbar {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 50; display: flex; align-items: center;
+      padding: 8px 10px 8px 20px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(60px) saturate(150%);
+      -webkit-backdrop-filter: blur(60px) saturate(150%);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: white; padding-right: 20px;
+    }
+    .nav-logo-icon {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: var(--primary); display: flex;
+      align-items: center; justify-content: center;
+      font-family: var(--font-title); font-weight: 800;
+      font-size: 14px; color: #0a0c12;
+    }
+    .nav-logo-text {
+      font-family: var(--font-title); font-size: 15px;
+      font-weight: 700; color: rgba(255,255,255,0.9);
+      letter-spacing: -0.02em;
+    }
+    .nav-links { display: flex; align-items: center; gap: 2px; }
+    .nav-links a {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 16px; border-radius: 9999px;
+      color: rgba(255,255,255,0.3); text-decoration: none;
+      font-size: 13px; font-weight: 500;
+      font-family: var(--font);
+      transition: all 0.2s;
+    }
+    .nav-links a:hover { color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.04); }
+    .nav-links a svg { width: 14px; height: 14px; }
+    .nav-lang {
+      display: flex; align-items: center; margin: 0 4px;
+      border-radius: 9999px; border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02); padding: 2px;
+    }
+    .nav-lang button {
+      padding: 5px 10px; border-radius: 9999px; border: none;
+      font-size: 11px; font-weight: 500; font-family: var(--font);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .nav-lang button.active {
+      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
+    }
+    .nav-lang button:not(.active) {
+      background: transparent; color: rgba(255,255,255,0.25);
+    }
+    .nav-lang button:not(.active):hover { color: rgba(255,255,255,0.45); }
+    .nav-cabinet {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 20px; border-radius: 12px;
+      background: var(--primary); color: #0a0c12;
+      font-size: 13px; font-weight: 600; font-family: var(--font);
+      text-decoration: none; margin-left: 4px;
+      transition: all 0.2s;
+    }
+    .nav-cabinet:hover {
+      background: #7b94ff;
+      box-shadow: 0 0 20px rgba(99,130,255,0.25);
+    }
+    .nav-cabinet svg { width: 14px; height: 14px; }
 
-        /* ── Pricing ──────────────────────────────────── */
-        .pricing { padding: 80px 0; position: relative; z-index: 1; }
-        .pricing-title {
-            font-family: var(--font-title);
-            font-size: 44px; font-weight: 800; text-align: center;
-            margin-bottom: 12px; letter-spacing: -1px;
-        }
-        .pricing-sub {
-            text-align: center; color: var(--text-dim);
-            font-size: 16px; max-width: 480px; margin: 0 auto 56px;
-        }
-        .pricing-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-        }
-        .pricing-card {
-            border-radius: 20px; padding: 32px;
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column;
-            transition: all 0.3s;
-        }
-        .pricing-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .pricing-card.popular {
-            border-color: rgba(99,130,255,0.3);
-            background: linear-gradient(135deg, rgba(99,130,255,0.08), rgba(99,130,255,0.02));
-        }
-        .pricing-card.popular::before {
-            content: 'ПОПУЛЯРНЫЙ'; position: absolute; top: 0; left: 0; right: 0;
-            padding: 6px; text-align: center; font-size: 10px; font-weight: 700;
-            letter-spacing: 1.5px; color: #fff;
-            background: var(--primary); border-radius: 20px 20px 0 0;
-        }
-        .pricing-card.popular { padding-top: 48px; }
-        .pricing-card h3 {
-            font-family: var(--font-title); font-size: 20px;
-            font-weight: 700; margin-bottom: 8px;
-        }
-        .pricing-card .price {
-            font-family: var(--font-title); font-size: 40px;
-            font-weight: 800; margin: 16px 0;
-        }
-        .pricing-card .price span { font-size: 16px; font-weight: 400; color: var(--text-dim); }
-        .pricing-card ul {
-            list-style: none; margin: 24px 0; flex: 1;
-        }
-        .pricing-card li {
-            padding: 8px 0; font-size: 14px; color: var(--text-dim);
-            display: flex; align-items: center; gap: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .pricing-card li:last-child { border: none; }
-        .pricing-card li svg { width: 18px; height: 18px; color: var(--primary); flex-shrink: 0; }
-        .pricing-card .btn { width: 100%; justify-content: center; margin-top: 16px; }
+    /* ═══ Hero ═════════════════════════════════════════════════ */
+    .hero {
+      position: relative; height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%; object-fit: cover;
+      object-position: center 40%;
+    }
+    .hero-bg-ken { animation: kenBurns 30s ease-in-out infinite; transform-origin: center; }
+    .hero-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(
+        rgba(10, 12, 18, 0.56) 0%,
+        rgba(10, 12, 18, 0.68) 15%,
+        rgba(10, 12, 18, 0.8) 35%,
+        rgba(10, 12, 18, 0.88) 55%,
+        rgba(10, 12, 18, 0.95) 80%,
+        rgb(10, 12, 18) 100%
+      );
+    }
+    .hero-content {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      padding: 0 24px;
+    }
+    .hero-logo { margin-bottom: 28px; }
+    .hero-logo svg { width: 56px; height: 48px; }
+    .hero h1 {
+      font-family: var(--font-title);
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -0.04em; color: white;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .hero-sub {
+      margin-top: 24px; max-width: 560px;
+      font-size: clamp(14px, 2vw, 17px);
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7; font-family: var(--font);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+    }
+    .hero-btns {
+      display: flex; align-items: center; gap: 16px;
+      margin-top: 36px;
+    }
 
-        /* ── Steps ────────────────────────────────────── */
-        .steps { padding: 80px 0; position: relative; z-index: 1; }
-        .steps-title {
-            font-family: var(--font-title);
-            font-size: 44px; font-weight: 800; text-align: center;
-            margin-bottom: 12px; letter-spacing: -1px;
-        }
-        .steps-sub {
-            text-align: center; color: var(--text-dim);
-            font-size: 16px; max-width: 500px; margin: 0 auto 56px;
-        }
-        .steps-list {
-            display: flex; flex-direction: column; gap: 16px;
-            max-width: 700px; margin: 0 auto;
-        }
-        .step-card {
-            display: flex; align-items: center; gap: 24px;
-            border-radius: 16px; padding: 24px 28px;
-            transition: all 0.3s;
-        }
-        .step-card:hover {
-            transform: translateX(4px);
-            border-color: rgba(255,255,255,0.12);
-        }
-        .step-num {
-            width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(99,130,255,0.1); border: 1px solid rgba(99,130,255,0.15);
-            font-family: var(--font-title); font-size: 18px; font-weight: 800;
-            color: var(--primary);
-        }
-        .step-card h3 {
-            font-family: var(--font-title); font-size: 16px;
-            font-weight: 700; margin-bottom: 4px;
-        }
-        .step-card p {
-            font-size: 14px; color: var(--text-dim); line-height: 1.5;
-        }
+    /* ═══ Buttons ══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; border-radius: 16px;
+      font-family: var(--font); font-size: 15px;
+      font-weight: 600; text-decoration: none;
+      transition: all 0.3s; cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: var(--primary); color: #0a0c12;
+    }
+    .btn-primary:hover {
+      background: #7b94ff;
+      box-shadow: 0 0 50px rgba(99,130,255,0.3);
+    }
+    .btn-glass {
+      color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      background: rgba(255,255,255,0.06);
+    }
+    .btn-glass:hover {
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.1);
+    }
+    .btn svg { width: 16px; height: 16px; }
 
-        /* ── CTA ──────────────────────────────────────── */
-        .cta {
-            padding: 100px 0; position: relative; z-index: 1;
-        }
-        .cta-box {
-            border-radius: 24px; padding: 64px 40px; text-align: center;
-            position: relative; overflow: hidden;
-        }
-        .cta-box::before {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(ellipse at center, rgba(99,130,255,0.08) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .cta-title {
-            font-family: var(--font-title);
-            font-size: clamp(32px, 5vw, 48px); font-weight: 800;
-            letter-spacing: -1px; margin-bottom: 16px; position: relative;
-        }
-        .cta-sub {
-            color: var(--text-dim); font-size: 16px;
-            max-width: 420px; margin: 0 auto 36px; position: relative;
-        }
-        .cta-btns { display: flex; gap: 12px; justify-content: center; position: relative; }
+    /* ═══ Section (Products) ═══════════════════════════════════ */
+    .section-products {
+      position: relative; overflow: hidden;
+    }
+    .section-products .bg-img {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .section-products .bg-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      opacity: 0.12;
+    }
+    .section-products .bg-gradient-top {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+      height: 200px;
+      background: linear-gradient(rgb(10, 12, 18) 0%, rgba(10, 12, 18, 0.64) 45%, rgba(10, 12, 18, 0) 100%);
+    }
+    .section-products .bg-gradient-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+      height: 160px;
+      background: linear-gradient(to top, rgb(10, 12, 18) 0%, rgba(10, 12, 18, 0.76) 42%, rgba(10, 12, 18, 0) 100%);
+    }
+    .section-products .bg-radial {
+      position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(circle at 50% 14%, rgba(99,130,255,0.045), transparent 28%);
+    }
+    .products-inner {
+      position: relative; z-index: 10;
+      padding: 180px 24px 140px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .section-title {
+      text-align: center; margin-bottom: 56px;
+    }
+    .section-title h2 {
+      font-family: var(--font-title);
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 800; color: white;
+      margin-bottom: 16px;
+    }
+    .section-title p {
+      font-size: 15px; color: rgba(255,255,255,0.35);
+      max-width: 500px; margin: 0 auto;
+      line-height: 1.7;
+    }
 
-        /* ── Footer ────────────────────────────────────── */
-        footer {
-            position: relative; z-index: 1;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            padding: 48px 0 24px;
-        }
-        .footer-grid {
-            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;
-            margin-bottom: 36px;
-        }
-        .footer-brand p {
-            font-size: 14px; color: var(--text-dim);
-            margin-top: 12px; line-height: 1.6;
-        }
-        .footer-social { display: flex; gap: 8px; margin-top: 16px; }
-        .footer-social a {
-            width: 36px; height: 36px; border-radius: 10px;
-            background: var(--glass); border: 1px solid var(--glass-border);
-            display: flex; align-items: center; justify-content: center;
-            text-decoration: none; color: var(--text-dim);
-            transition: all 0.2s;
-        }
-        .footer-social a:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
-        .footer-social a svg { width: 16px; height: 16px; }
-        .footer-col h4 {
-            font-size: 11px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 16px;
-        }
-        .footer-col a {
-            display: block; font-size: 13px; color: var(--text-dim);
-            text-decoration: none; padding: 5px 0; transition: color 0.2s;
-        }
-        .footer-col a:hover { color: rgba(255,255,255,0.7); }
-        .footer-bottom {
-            display: flex; justify-content: space-between; align-items: center;
-            padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04);
-            font-size: 12px; color: var(--text-muted);
-        }
+    /* ═══ Product Cards ════════════════════════════════════════ */
+    .products-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .product-card {
+      position: relative; border-radius: 20px;
+      overflow: hidden; height: 340px;
+      cursor: pointer;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      transition: all 0.5s ease-out;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+    }
+    .product-card .card-bg {
+      position: absolute; inset: 0;
+    }
+    .product-card .card-decorations {
+      position: absolute; inset: 0;
+    }
+    .product-card .card-center-logo {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.5s ease-out;
+    }
+    .product-card:hover .card-center-logo { transform: scale(1.25); }
+    .product-card .card-center-logo svg { width: 80px; height: 80px; opacity: 0.25; }
+    .product-card .card-bottom-gradient {
+      position: absolute; inset-x: 0; bottom: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+    }
+    .product-card .card-content {
+      position: relative; z-index: 10;
+      height: 100%; display: flex;
+      flex-direction: column; justify-content: flex-end;
+      padding: 20px;
+      transition: transform 0.5s ease-out;
+    }
+    .product-card:hover .card-content {
+      transform: translateY(-4px) translateX(2px);
+    }
+    .card-label {
+      font-size: 10px; font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+    .card-name {
+      font-family: var(--font-title); font-size: 18px;
+      font-weight: 700; color: white;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 11px; color: rgba(255,255,255,0.3);
+      margin-bottom: 12px; line-height: 1.6;
+    }
+    .card-price {
+      font-size: 22px; font-weight: 700;
+    }
 
-        /* ── Responsive ───────────────────────────────── */
-        @media (max-width: 768px) {
-            .navbar { top: 10px; padding: 4px 6px 4px 12px; }
-            .nav-links a span { display: none; }
-            .features-grid { grid-template-columns: 1fr; }
-            .feature-card.span-2 { grid-column: span 1; }
-            .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
-            .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
-        }
-    </style>
+    /* ═══ How It Works ═════════════════════════════════════════ */
+    .section-how {
+      position: relative; overflow: hidden;
+      padding: 96px 24px 160px;
+    }
+    .how-inner { max-width: 1100px; margin: 0 auto; }
+    .how-title {
+      text-align: center; margin-bottom: 80px;
+    }
+    .how-title h2 {
+      font-family: var(--font-title);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800; color: white;
+      line-height: 0.94; letter-spacing: -0.05em;
+      max-width: 20ch; margin: 0 auto;
+    }
+    .how-title p {
+      margin-top: 28px;
+      font-size: clamp(14px, 2vw, 17px);
+      color: rgba(255,255,255,0.4);
+      max-width: 500px; margin-left: auto; margin-right: auto;
+      line-height: 1.7;
+    }
+    .how-steps {
+      display: flex; align-items: flex-start;
+      gap: 0; justify-content: center;
+    }
+    .how-step {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      max-width: 280px;
+    }
+    .how-step svg {
+      width: 26px; height: 26px;
+      color: rgba(255,255,255,0.7);
+      transition: color 0.3s;
+    }
+    .how-step:hover svg { color: rgba(99,130,255,0.8); }
+    .how-step h3 {
+      margin-top: 24px;
+      font-family: var(--font-title); font-size: 1.1rem;
+      font-weight: 600; color: white;
+    }
+    .how-step p {
+      margin-top: 10px;
+      font-size: 13.5px; color: rgba(255,255,255,0.35);
+      line-height: 1.6; max-width: 17rem;
+    }
+    .how-connector {
+      width: 80px; height: 1px; flex-shrink: 0;
+      margin-top: 13px;
+      background: linear-gradient(to right, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+    }
+
+    /* ═══ Footer ═══════════════════════════════════════════════ */
+    footer {
+      position: relative; background: var(--bg-delta);
+    }
+    .footer-cta {
+      max-width: 1100px; margin: 0 auto;
+      padding: 120px 24px;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+    }
+    .footer-cta h2 {
+      font-family: var(--font-title);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800; color: white;
+      line-height: 1.1;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+    .footer-cta p {
+      margin-top: 12px;
+      font-size: 14px; color: rgba(255,255,255,0.3);
+      max-width: 400px;
+    }
+    .footer-cta-btns {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 32px;
+    }
+    .footer-cta-btns .btn-primary { border-radius: 16px; }
+    .footer-social-btn {
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.2);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .footer-social-btn:hover {
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.06);
+    }
+    .footer-social-btn svg { width: 16px; height: 16px; }
+
+    .footer-links {
+      max-width: 1100px; margin: 0 auto;
+      padding: 64px 24px 40px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 32px; margin-bottom: 48px;
+    }
+    .footer-brand-col .footer-logo {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px;
+    }
+    .footer-brand-col .footer-logo svg { width: 18px; height: 15px; }
+    .footer-brand-col .footer-logo span {
+      font-family: var(--font-title); font-size: 14px;
+      font-weight: 700; color: rgba(255,255,255,0.8);
+      letter-spacing: -0.02em;
+    }
+    .footer-brand-col p {
+      font-size: 11px; color: rgba(255,255,255,0.2);
+      line-height: 1.6; max-width: 180px;
+      margin-bottom: 20px;
+    }
+    .footer-social-links { display: flex; gap: 8px; }
+    .footer-social-links a {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.2); text-decoration: none;
+      transition: all 0.2s;
+    }
+    .footer-social-links a:hover {
+      color: rgba(255,255,255,0.5);
+      border-color: rgba(255,255,255,0.12);
+    }
+    .footer-social-links a svg { width: 14px; height: 14px; }
+    .footer-col h4 {
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.3); margin-bottom: 14px;
+    }
+    .footer-col a {
+      display: block; font-size: 12px;
+      color: rgba(255,255,255,0.2); text-decoration: none;
+      padding: 4px 0; transition: color 0.2s;
+    }
+    .footer-col a:hover { color: rgba(255,255,255,0.5); }
+    .footer-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding-top: 24px;
+    }
+    .footer-bottom span {
+      font-size: 11px; color: rgba(255,255,255,0.25);
+    }
+
+    /* ═══ Responsive ═══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .nav-links, .nav-lang { display: none; }
+      .navbar { padding: 6px 8px 6px 16px; }
+      .products-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+      .how-steps { flex-direction: column; align-items: center; gap: 40px; }
+      .how-connector { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(255,255,255,0.14), rgba(255,255,255,0.03)); margin-top: 0; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Navbar -->
-<div class="navbar" id="navbar">
-    <a href="#" class="nav-logo">
-        <span class="nav-logo-icon">J</span>
-        <span class="nav-logo-text">jartix</span>
+<!-- ═══ Navbar ═══════════════════════════════════════════════ -->
+<nav class="navbar">
+  <a href="#" class="nav-logo">
+    <span class="nav-logo-icon">J</span>
+    <span class="nav-logo-text">jartix</span>
+  </a>
+  <div class="nav-links">
+    <a href="#products">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+      Тарифы
     </a>
-    <div class="nav-links">
-        <a href="#features"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg><span>Возможности</span></a>
-        <a href="#pricing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Тарифы</span></a>
-        <a href="#how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Как работает</span></a>
-    </div>
-    <a href="auth.html" class="nav-cabinet">Кабинет</a>
-</div>
+    <a href="#how">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+      Документация
+    </a>
+    <a href="#" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+      Поддержка
+    </a>
+  </div>
+  <div class="nav-lang">
+    <button class="active">RU</button>
+    <button>EN</button>
+  </div>
+  <a href="auth.html" class="nav-cabinet">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Кабинет
+  </a>
+</nav>
 
-<!-- Hero -->
+<!-- ═══ Hero ═════════════════════════════════════════════════ -->
 <section class="hero">
-    <div>
-        <div class="hero-badge">
-            <span class="hero-badge-dot"></span>
-            Версия 1.0.04 — Обновлено
-        </div>
-        <h1>Знай больше.<br>Побеждай с <span>jartix.</span></h1>
-        <p class="hero-sub">Поднимите свой игровой процесс на новый уровень. Контроль, скорость и точность — всё уже внутри.</p>
-        <div class="hero-btns">
-            <a href="auth.html" class="btn btn-primary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Скачать лаунчер
-            </a>
-            <a href="#pricing" class="btn btn-glass">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                Смотреть тарифы
-            </a>
-        </div>
+  <div class="hero-bg hero-bg-ken">
+    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1920&q=80" alt="" loading="eager">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-logo">
+      <svg fill="none" viewBox="0 0 50 42" width="56" height="48">
+        <defs>
+          <linearGradient id="hlg" x1="0" y1="0" x2="50" y2="42" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6382FF"/>
+            <stop offset="1" stop-color="#3D5ACC"/>
+          </linearGradient>
+        </defs>
+        <path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="url(#hlg)"/>
+        <path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="url(#hlg)" fill-rule="evenodd"/>
+      </svg>
     </div>
+    <h1>
+      <span class="gradient-text">Знай больше.</span><br>
+      Побеждай с <span class="gradient-text">jartix.</span>
+    </h1>
+    <p class="hero-sub">Поднимите свой игровой процесс на новый уровень. Контроль, скорость и точность — всё уже внутри.</p>
+    <div class="hero-btns">
+      <a href="auth.html" class="btn btn-primary btn-shimmer">
+        Создать аккаунт
+      </a>
+      <a href="#how" class="btn btn-glass">
+        Документация
+      </a>
+    </div>
+  </div>
 </section>
 
-<!-- Features -->
-<section id="features" class="features">
-    <div class="container">
-        <h2 class="features-title">Возможности</h2>
-        <p class="features-sub">Всё что нужно для доминации — в одном клиенте.</p>
-        <div class="features-grid">
-            <div class="feature-card glass span-2">
-                <div class="feature-tag">Античит</div>
-                <div class="feature-card-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <h3>Обход античита</h3>
-                <p>Постоянно обновляемый обход всех популярных античит-систем. Auto bypass, авто-обновление.</p>
-            </div>
-            <div class="feature-card glass">
-                <div class="feature-tag">Визуал</div>
-                <div class="feature-card-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                </div>
-                <h3>ESP / Wallhack</h3>
-                <p>Просмотр через стены, ESP боксы, имена, здоровье.</p>
-            </div>
-            <div class="feature-card glass">
-                <div class="feature-tag">Боевка</div>
-                <div class="feature-card-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                </div>
-                <h3>Aura</h3>
-                <p>Точная Aura с настройкой FOV, скорости и приоритета.</p>
-            </div>
-            <div class="feature-card glass">
-                <div class="feature-tag">Движение</div>
-                <div class="feature-card-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                </div>
-                <h3>Клиент</h3>
-                <p>Быстрый лаунчер с авто-обновлениями и простой настройкой.</p>
-            </div>
-            <div class="feature-card glass">
-                <div class="feature-tag">Поддержка</div>
-                <div class="feature-card-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                </div>
-                <h3>24/7 Поддержка</h3>
-                <p>Быстрая помощь в Telegram и Discord в любое время.</p>
-            </div>
-        </div>
+<!-- ═══ Products ═════════════════════════════════════════════ -->
+<section class="section-products" id="products">
+  <div class="bg-img">
+    <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&q=80" alt="" loading="lazy">
+    <div style="position:absolute;inset:0;background:linear-gradient(rgba(10,12,18,0.68) 0%,rgba(10,12,18,0.74) 28%,rgba(10,12,18,0.9) 100%)"></div>
+    <div class="bg-radial"></div>
+  </div>
+  <div class="bg-gradient-top"></div>
+  <div class="bg-gradient-bottom"></div>
+  <div class="products-inner">
+    <div class="section-title">
+      <h2>Тарифы</h2>
+      <p>Выберите план и получите мгновенный доступ ко всем функциям, обновлениям и поддержке.</p>
     </div>
+    <div class="products-grid">
+      <!-- Card 1 -->
+      <div class="product-card" style="background:linear-gradient(145deg,rgba(99,130,255,0.5) 0%,rgba(99,130,255,0.314) 50%,rgba(99,130,255,0.19) 100%);box-shadow:rgba(99,130,255,0.125) 0 1px 0 inset,rgba(99,130,255,0.094) 0 0 0 1px">
+        <div class="card-center-logo" style="color:rgb(99,130,255)">
+          <svg fill="none" viewBox="0 0 50 42"><path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="currentColor"/><path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="currentColor" fill-rule="evenodd"/></svg>
+        </div>
+        <div class="card-bottom-gradient"></div>
+        <div class="card-content">
+          <p class="card-label">ТАРИФ 1.21+</p>
+          <p class="card-name">Jartix Pro</p>
+          <p class="card-desc">Ранний доступ к новым модулям, обновлениям и эксклюзивным функциям.</p>
+          <p class="card-price" style="color:rgb(99,130,255)">499 ₽</p>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="product-card" style="background:linear-gradient(145deg,rgba(110,138,255,0.5) 0%,rgba(110,138,255,0.314) 50%,rgba(110,138,255,0.19) 100%);box-shadow:rgba(110,138,255,0.125) 0 1px 0 inset,rgba(110,138,255,0.094) 0 0 0 1px">
+        <div class="card-center-logo" style="color:rgb(110,138,255)">
+          <svg fill="none" viewBox="0 0 50 42"><path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="currentColor"/><path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="currentColor" fill-rule="evenodd"/></svg>
+        </div>
+        <div class="card-bottom-gradient"></div>
+        <div class="card-content">
+          <p class="card-label">ТАРИФ БАЗОВЫЙ</p>
+          <p class="card-name">Jartix Standard</p>
+          <p class="card-desc">Клиент навсегда, все последующие обновления включены.</p>
+          <p class="card-price" style="color:rgb(110,138,255)">299 ₽</p>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="product-card" style="background:linear-gradient(145deg,rgba(102,221,170,0.5) 0%,rgba(102,221,170,0.314) 50%,rgba(102,221,170,0.19) 100%);box-shadow:rgba(102,221,170,0.125) 0 1px 0 inset,rgba(102,221,170,0.094) 0 0 0 1px">
+        <div class="card-center-logo" style="color:rgb(102,221,170)">
+          <svg fill="none" viewBox="0 0 50 42"><path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="currentColor"/><path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="currentColor" fill-rule="evenodd"/></svg>
+        </div>
+        <div class="card-bottom-gradient"></div>
+        <div class="card-content">
+          <p class="card-label">РАЗОВАЯ УСЛУГА</p>
+          <p class="card-name">Сброс HWID</p>
+          <p class="card-desc">Сброс привязки (HWID) на вашем аккаунте к железу.</p>
+          <p class="card-price" style="color:rgb(102,221,170)">200 ₽</p>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:12px;color:rgba(255,255,255,0.2);margin-top:80px">
+      Все планы включают неограниченный доступ, автоматические обновления и приоритетную поддержку.
+    </p>
+  </div>
 </section>
 
-<!-- Pricing -->
-<section id="pricing" class="pricing">
-    <div class="container">
-        <h2 class="pricing-title">Тарифы</h2>
-        <p class="pricing-sub">Выберите план и получите мгновенный доступ ко всем функциям.</p>
-        <div class="pricing-grid">
-            <div class="pricing-card glass">
-                <h3>1 месяц</h3>
-                <div class="price">200 <span>₽</span></div>
-                <ul>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Все модули</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Авто-обновления</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Поддержка 24/7</li>
-                </ul>
-                <a href="auth.html" class="btn btn-glass">Выбрать</a>
-            </div>
-            <div class="pricing-card glass popular">
-                <h3>3 месяца</h3>
-                <div class="price">500 <span>₽</span></div>
-                <ul>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Все модули</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Авто-обновления</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Поддержка 24/7</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Приоритет обновлений</li>
-                </ul>
-                <a href="auth.html" class="btn btn-primary">Выбрать</a>
-            </div>
-            <div class="pricing-card glass">
-                <h3>Сброс HWID</h3>
-                <div class="price">550 <span>₽</span></div>
-                <ul>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Сброс привязки</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Мгновенно</li>
-                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Поддержка</li>
-                </ul>
-                <a href="auth.html" class="btn btn-glass">Выбрать</a>
-            </div>
-        </div>
+<!-- ═══ How It Works ═════════════════════════════════════════ -->
+<section class="section-how" id="how">
+  <div class="how-inner">
+    <div class="how-title">
+      <h2>Запуск за<br>несколько минут</h2>
+      <p>От регистрации до первой игры — без сложной настройки. Скачали лаунчер, вошли в аккаунт и играете.</p>
     </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+        <h3>Создайте аккаунт</h3>
+        <p>Быстрая регистрация за минуту. Один аккаунт — доступ ко всем продуктам и функционалу.</p>
+      </div>
+      <div class="how-connector"></div>
+      <div class="how-step">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+        <h3>Скачайте клиент</h3>
+        <p>Загрузите лаунчер через личный кабинет на сайте. Автоматически подтянет последнюю версию.</p>
+      </div>
+      <div class="how-connector"></div>
+      <div class="how-step">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg>
+        <h3>Играйте и побеждайте</h3>
+        <p>Выберите сервер и запускайте. Контроль, скорость и точность — с первой секунды.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- How it works -->
-<section id="how" class="steps">
-    <div class="container">
-        <h2 class="steps-title">Как это работает</h2>
-        <p class="steps-sub">От регистрации до первой игры — три простых шага.</p>
-        <div class="steps-list">
-            <div class="step-card glass">
-                <div class="step-num">1</div>
-                <div>
-                    <h3>Создайте аккаунт</h3>
-                    <p>Быстрая регистрация за минуту. Один аккаунт — доступ ко всем продуктам.</p>
-                </div>
-            </div>
-            <div class="step-card glass">
-                <div class="step-num">2</div>
-                <div>
-                    <h3>Скачайте лаунчер</h3>
-                    <p>Загрузите лаунчер из кабинета. Он автоматически подтянет последнюю версию.</p>
-                </div>
-            </div>
-            <div class="step-card glass">
-                <div class="step-num">3</div>
-                <div>
-                    <h3>Играйте и побеждайте</h3>
-                    <p>Войдите с лицензионным ключом и играйте. Всё просто.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA -->
-<section class="cta">
-    <div class="container">
-        <div class="cta-box glass">
-            <h2 class="cta-title">Начни побеждать <span style="color:var(--primary)">сегодня</span></h2>
-            <p class="cta-sub">Присоединяйся к тысячам игроков, которые уже выбрали jartix.</p>
-            <div class="cta-btns">
-                <a href="auth.html" class="btn btn-primary">
-                    Скачать лаунчер
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Footer -->
+<!-- ═══ Footer ═══════════════════════════════════════════════ -->
 <footer>
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <a href="#" class="nav-logo">
-                    <span class="nav-logo-icon">J</span>
-                    <span class="nav-logo-text">jartix</span>
-                </a>
-                <p>Клиент, который делает тебя непобедимым. Контроль, скорость и точность.</p>
-                <div class="footer-social">
-                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></a>
-                    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4>Платформа</h4>
-                <a href="auth.html">Создать аккаунт</a>
-                <a href="auth.html">Войти</a>
-                <a href="auth.html">Кабинет</a>
-            </div>
-            <div class="footer-col">
-                <h4>Навигация</h4>
-                <a href="#pricing">Тарифы</a>
-                <a href="#features">Возможности</a>
-                <a href="#how">Как работает</a>
-            </div>
-            <div class="footer-col">
-                <h4>Документы</h4>
-                <a href="#">Политика конфиденциальности</a>
-                <a href="#">Условия пользования</a>
-                <a href="#">Возврат средств</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <span>&copy; 2026 jartix. Все права защищены.</span>
-            <span>jartix.xyz</span>
-        </div>
+  <div class="footer-cta">
+    <h2>Начни побеждать <span class="gradient-text">сегодня</span></h2>
+    <p>Присоединяйся к тысячам игроков, которые уже выбрали jartix.</p>
+    <div class="footer-cta-btns">
+      <a href="auth.html" class="btn btn-primary btn-shimmer">
+        Создать аккаунт
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <a href="#" class="footer-social-btn" target="_blank" rel="noopener noreferrer">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.36-.698.772-1.362 1.225-1.993a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+      </a>
+      <a href="#" class="footer-social-btn" target="_blank" rel="noopener noreferrer">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+      </a>
     </div>
+  </div>
+  <div class="footer-links">
+    <div class="footer-grid">
+      <div class="footer-brand-col">
+        <div class="footer-logo">
+          <svg fill="none" viewBox="0 0 50 42" width="18" height="15">
+            <defs><linearGradient id="flg" x1="0" y1="0" x2="50" y2="42" gradientUnits="userSpaceOnUse"><stop stop-color="#6382FF"/><stop offset="1" stop-color="#3D5ACC"/></linearGradient></defs>
+            <path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="url(#flg)"/>
+            <path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="url(#flg)" fill-rule="evenodd"/>
+          </svg>
+          <span>jartix</span>
+        </div>
+        <p>Клиент, который делает тебя непобедимым.</p>
+        <div class="footer-social-links">
+          <a href="#" target="_blank" rel="noopener noreferrer"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.36-.698.772-1.362 1.225-1.993a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg></a>
+          <a href="#" target="_blank" rel="noopener noreferrer"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Платформа</h4>
+        <a href="auth.html">Создать аккаунт</a>
+        <a href="auth.html">Войти в аккаунт</a>
+        <a href="auth.html">Кабинет</a>
+      </div>
+      <div class="footer-col">
+        <h4>Навигация</h4>
+        <a href="#products">Тарифы</a>
+        <a href="#how">Как работает</a>
+      </div>
+      <div class="footer-col">
+        <h4>Документы</h4>
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Условия пользования</a>
+        <a href="#">Возврат средств</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 jartix. Все права защищены.</span>
+      <span>jartix.xyz</span>
+    </div>
+  </div>
 </footer>
-
-<script>
-    const navbar = document.getElementById('navbar');
-    let ticking = false;
-
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                navbar.classList.toggle('scrolled', window.scrollY > 40);
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
-
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener('click', e => {
-            const target = document.querySelector(link.getAttribute('href'));
-            if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-        });
-    });
-</script>
 
 </body>
 </html>
