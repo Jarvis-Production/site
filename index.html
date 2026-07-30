@@ -109,13 +109,7 @@
       display: flex; align-items: center; gap: 10px;
       text-decoration: none; color: white; padding-right: 20px;
     }
-    .nav-logo-icon {
-      width: 32px; height: 32px; border-radius: 10px;
-      background: var(--primary); display: flex;
-      align-items: center; justify-content: center;
-      font-family: var(--font-title); font-weight: 800;
-      font-size: 14px; color: #0a0c12;
-    }
+    .nav-logo svg { flex-shrink: 0; }
     .nav-logo-text {
       font-family: var(--font-title); font-size: 15px;
       font-weight: 700; color: rgba(255,255,255,0.9);
@@ -524,7 +518,16 @@
 <!-- ═══ Navbar ═══════════════════════════════════════════════ -->
 <nav class="navbar">
   <a href="#" class="nav-logo">
-    <span class="nav-logo-icon">J</span>
+    <svg fill="none" viewBox="0 0 32 27" width="20" height="17">
+      <defs>
+        <radialGradient id="nlg" cx="0" cy="0" gradientTransform="translate(16 13.5) scale(16 13)" gradientUnits="userSpaceOnUse" r="1">
+          <stop stop-color="#6382FF"></stop>
+          <stop offset="1" stop-color="#3D5ACC"></stop>
+        </radialGradient>
+      </defs>
+      <path d="M5 24L9 24L7 20.5L5 24Z" fill="url(#nlg)"/>
+      <path d="M24 2V19C24 23 21 25.5 17 25.5C13 25.5 10 23 10 19V17H13V19C13 21.5 15 23 17 23C19 23 21 21.5 21 19V2H24Z" fill="url(#nlg)" fill-rule="evenodd"/>
+    </svg>
     <span class="nav-logo-text">jartix</span>
   </a>
   <div class="nav-links">
@@ -559,15 +562,15 @@
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-logo">
-      <svg fill="none" viewBox="0 0 50 42" width="56" height="48">
+      <svg fill="none" viewBox="0 0 32 27" width="56" height="48">
         <defs>
-          <linearGradient id="hlg" x1="0" y1="0" x2="50" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#6382FF"/>
-            <stop offset="1" stop-color="#3D5ACC"/>
-          </linearGradient>
+          <radialGradient id="hlg" cx="0" cy="0" gradientTransform="translate(16 13.5) scale(16 13)" gradientUnits="userSpaceOnUse" r="1">
+            <stop stop-color="#6382FF"></stop>
+            <stop offset="1" stop-color="#3D5ACC"></stop>
+          </radialGradient>
         </defs>
-        <path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="url(#hlg)"/>
-        <path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="url(#hlg)" fill-rule="evenodd"/>
+        <path d="M5 24L9 24L7 20.5L5 24Z" fill="url(#hlg)"/>
+        <path d="M24 2V19C24 23 21 25.5 17 25.5C13 25.5 10 23 10 19V17H13V19C13 21.5 15 23 17 23C19 23 21 21.5 21 19V2H24Z" fill="url(#hlg)" fill-rule="evenodd"/>
       </svg>
     </div>
     <h1>
@@ -604,7 +607,7 @@
       <!-- Card 1 -->
       <div class="product-card" style="background:linear-gradient(145deg,rgba(99,130,255,0.5) 0%,rgba(99,130,255,0.314) 50%,rgba(99,130,255,0.19) 100%);box-shadow:rgba(99,130,255,0.125) 0 1px 0 inset,rgba(99,130,255,0.094) 0 0 0 1px">
         <div class="card-center-logo" style="color:rgb(99,130,255)">
-          <svg fill="none" viewBox="0 0 50 42"><path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="currentColor"/><path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="currentColor" fill-rule="evenodd"/></svg>
+          <svg fill="none" viewBox="0 0 32 27"><path d="M5 24L9 24L7 20.5L5 24Z" fill="currentColor"/><path d="M24 2V19C24 23 21 25.5 17 25.5C13 25.5 10 23 10 19V17H13V19C13 21.5 15 23 17 23C19 23 21 21.5 21 19V2H24Z" fill="currentColor" fill-rule="evenodd"/></svg>
         </div>
         <div class="card-bottom-gradient"></div>
         <div class="card-content">
@@ -617,7 +620,7 @@
       <!-- Card 2 -->
       <div class="product-card" style="background:linear-gradient(145deg,rgba(110,138,255,0.5) 0%,rgba(110,138,255,0.314) 50%,rgba(110,138,255,0.19) 100%);box-shadow:rgba(110,138,255,0.125) 0 1px 0 inset,rgba(110,138,255,0.094) 0 0 0 1px">
         <div class="card-center-logo" style="color:rgb(110,138,255)">
-          <svg fill="none" viewBox="0 0 50 42"><path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="currentColor"/><path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="currentColor" fill-rule="evenodd"/></svg>
+          <svg fill="none" viewBox="0 0 32 27"><path d="M5 24L9 24L7 20.5L5 24Z" fill="currentColor"/><path d="M24 2V19C24 23 21 25.5 17 25.5C13 25.5 10 23 10 19V17H13V19C13 21.5 15 23 17 23C19 23 21 21.5 21 19V2H24Z" fill="currentColor" fill-rule="evenodd"/></svg>
         </div>
         <div class="card-bottom-gradient"></div>
         <div class="card-content">
@@ -630,7 +633,7 @@
       <!-- Card 3 -->
       <div class="product-card" style="background:linear-gradient(145deg,rgba(102,221,170,0.5) 0%,rgba(102,221,170,0.314) 50%,rgba(102,221,170,0.19) 100%);box-shadow:rgba(102,221,170,0.125) 0 1px 0 inset,rgba(102,221,170,0.094) 0 0 0 1px">
         <div class="card-center-logo" style="color:rgb(102,221,170)">
-          <svg fill="none" viewBox="0 0 50 42"><path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="currentColor"/><path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="currentColor" fill-rule="evenodd"/></svg>
+          <svg fill="none" viewBox="0 0 32 27"><path d="M5 24L9 24L7 20.5L5 24Z" fill="currentColor"/><path d="M24 2V19C24 23 21 25.5 17 25.5C13 25.5 10 23 10 19V17H13V19C13 21.5 15 23 17 23C19 23 21 21.5 21 19V2H24Z" fill="currentColor" fill-rule="evenodd"/></svg>
         </div>
         <div class="card-bottom-gradient"></div>
         <div class="card-content">
@@ -698,10 +701,15 @@
     <div class="footer-grid">
       <div class="footer-brand-col">
         <div class="footer-logo">
-          <svg fill="none" viewBox="0 0 50 42" width="18" height="15">
-            <defs><linearGradient id="flg" x1="0" y1="0" x2="50" y2="42" gradientUnits="userSpaceOnUse"><stop stop-color="#6382FF"/><stop offset="1" stop-color="#3D5ACC"/></linearGradient></defs>
-            <path d="M6.5 41H13l1.8-3.4L11.3 31.4 6.5 41Z" fill="url(#flg)"/>
-            <path d="M23.2 40.8H30c7.4-0.3 15.5-5.2 18-14.9-0.5-1.8-1.1-3.4-2-4.9C44.4 17.5 41 13.1 37 10.2 34.2 8.2 31 7 28 7H0L23.2 40.8Zm-1.8-14.5L29.9 12h-6.5L18.7 20.1 10.2 6.3h30.6c4.8 0 11.9 4.4 13.2 11.7 0.1 0.8 0.2 1.5 0.2 2.3 0 7.3-6.3 14.8-13.4 14.8H37.6L34 26.3Z" fill="url(#flg)" fill-rule="evenodd"/>
+          <svg fill="none" viewBox="0 0 32 27" width="18" height="15">
+            <defs>
+              <radialGradient id="flg" cx="0" cy="0" gradientTransform="translate(16 13.5) scale(16 13)" gradientUnits="userSpaceOnUse" r="1">
+                <stop stop-color="#6382FF"></stop>
+                <stop offset="1" stop-color="#3D5ACC"></stop>
+              </radialGradient>
+            </defs>
+            <path d="M5 24L9 24L7 20.5L5 24Z" fill="url(#flg)"/>
+            <path d="M24 2V19C24 23 21 25.5 17 25.5C13 25.5 10 23 10 19V17H13V19C13 21.5 15 23 17 23C19 23 21 21.5 21 19V2H24Z" fill="url(#flg)" fill-rule="evenodd"/>
           </svg>
           <span>jartix</span>
         </div>
