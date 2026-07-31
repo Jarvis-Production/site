@@ -436,6 +436,13 @@
     /* ═══ Footer ═══════════════════════════════════════════════ */
     footer {
       position: relative; background: var(--bg-delta);
+      overflow: hidden;
+    }
+    footer::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url('img/footer.png') center/cover no-repeat;
+      opacity: 0.15;
     }
     .footer-cta {
       max-width: 1100px; margin: 0 auto;
@@ -596,7 +603,7 @@
 <!-- ═══ Hero ═════════════════════════════════════════════════ -->
 <section class="hero">
   <div class="hero-bg hero-bg-ken">
-    <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/Global-Header_Image-Tile_MC-Java-Bedrock_570x321.jpg" alt="" loading="eager">
+    <img src="img/hero.jpg" alt="" loading="eager">
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
@@ -641,7 +648,7 @@
 <!-- ═══ Products ═════════════════════════════════════════════ -->
 <section class="section-products" id="products">
   <div class="bg-img">
-    <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/screenshots/CREATE_BuildAlmostAnything.png" alt="" loading="lazy">
+    <img src="img/tarifs.png" alt="" loading="lazy">
     <div style="position:absolute;inset:0;background:linear-gradient(rgba(10,12,18,0.68) 0%,rgba(10,12,18,0.74) 28%,rgba(10,12,18,0.9) 100%)"></div>
     <div class="bg-radial"></div>
   </div>
