@@ -192,10 +192,10 @@
     .hero {
       position: relative; height: 100vh; display: flex;
       align-items: center; justify-content: center;
-      overflow: hidden;
     }
     .hero-bg {
-      position: absolute; inset: 0; z-index: 0;
+      position: absolute; top: 0; left: 0; right: 0; z-index: 0;
+      height: calc(100% + 100px);
     }
     .hero-bg img {
       width: 100%; height: 100%; object-fit: cover;
@@ -203,7 +203,8 @@
     }
     .hero-bg-ken { animation: kenBurns 30s ease-in-out infinite; transform-origin: center; }
     .hero-overlay {
-      position: absolute; inset: 0; z-index: 1;
+      position: absolute; top: 0; left: 0; right: 0; z-index: 1;
+      height: calc(100% + 100px);
       background: linear-gradient(
         rgba(10, 12, 18, 0.3) 0%,
         rgba(10, 12, 18, 0.6) 40%,
