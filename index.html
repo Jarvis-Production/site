@@ -34,6 +34,17 @@
       overflow-x: hidden;
       min-height: 100vh;
     }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99, 130, 255, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 35% at 20% 50%, rgba(99, 130, 255, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 35% at 80% 60%, rgba(99, 130, 255, 0.025) 0%, transparent 60%);
+      pointer-events: none;
+    }
 
     /* ═══ Animations ═══════════════════════════════════════════ */
     @keyframes fadeInDown {
@@ -310,6 +321,14 @@
       backdrop-filter: blur(40px);
       -webkit-backdrop-filter: blur(40px);
       transition: all 0.5s ease-out;
+    }
+    .product-card.card-blue {
+      background: linear-gradient(145deg, rgba(99,130,255,0.45) 0%, rgba(99,130,255,0.28) 50%, rgba(99,130,255,0.16) 100%);
+      box-shadow: rgba(99,130,255,0.12) 0px 1px 0px inset, rgba(99,130,255,0.09) 0px 0px 0px 1px;
+    }
+    .product-card.card-green {
+      background: linear-gradient(145deg, rgba(0,216,145,0.45) 0%, rgba(0,216,145,0.28) 50%, rgba(0,216,145,0.16) 100%);
+      box-shadow: rgba(0,216,145,0.12) 0px 1px 0px inset, rgba(0,216,145,0.09) 0px 0px 0px 1px;
     }
     .product-card:hover {
       transform: translateY(-4px);
@@ -634,7 +653,7 @@
     </div>
     <div class="products-grid">
       <!-- Card 1 -->
-      <div class="product-card" style="background:linear-gradient(145deg,rgba(110,138,255,0.5) 0%,rgba(110,138,255,0.314) 50%,rgba(110,138,255,0.19) 100%);box-shadow:rgba(110,138,255,0.125) 0 1px 0 inset,rgba(110,138,255,0.094) 0 0 0 1px">
+      <div class="product-card card-blue">
         <div class="card-center-logo" style="color:rgb(110,138,255)">
           <svg fill="none" viewBox="0 0 40 34"><path d="M4 6L10 2H16L8 6H4Z" fill="currentColor"/><path d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" fill="currentColor" fill-rule="evenodd"/><path d="M24 10L30 2H36L30 10H24Z" fill="currentColor"/><path d="M26 12L34 18L30 24L22 18L26 12Z" fill="currentColor"/><path d="M20 22L26 30H18L20 22Z" fill="currentColor"/></svg>
         </div>
@@ -647,7 +666,7 @@
         </div>
       </div>
       <!-- Card 3 -->
-      <div class="product-card" style="background:linear-gradient(145deg,rgba(102,221,170,0.5) 0%,rgba(102,221,170,0.314) 50%,rgba(102,221,170,0.19) 100%);box-shadow:rgba(102,221,170,0.125) 0 1px 0 inset,rgba(102,221,170,0.094) 0 0 0 1px">
+      <div class="product-card card-green">
         <div class="card-center-logo" style="color:rgb(102,221,170)">
           <svg fill="none" viewBox="0 0 40 34"><path d="M4 6L10 2H16L8 6H4Z" fill="currentColor"/><path d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" fill="currentColor" fill-rule="evenodd"/><path d="M24 10L30 2H36L30 10H24Z" fill="currentColor"/><path d="M26 12L34 18L30 24L22 18L26 12Z" fill="currentColor"/><path d="M20 22L26 30H18L20 22Z" fill="currentColor"/></svg>
         </div>
