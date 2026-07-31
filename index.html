@@ -33,16 +33,14 @@
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
       min-height: 100vh;
+      position: relative;
     }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: -1;
+    .bg-glow-fixed {
+      position: fixed; inset: 0; z-index: 0;
       background:
-        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99, 130, 255, 0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 35% at 20% 50%, rgba(99, 130, 255, 0.03) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 35% at 80% 60%, rgba(99, 130, 255, 0.025) 0%, transparent 60%);
+        radial-gradient(ellipse 80% 50% at 50% -5%, rgba(99, 130, 255, 0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 15% 45%, rgba(99, 130, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 85% 55%, rgba(0, 216, 145, 0.06) 0%, transparent 50%);
       pointer-events: none;
     }
 
@@ -323,12 +321,12 @@
       transition: all 0.5s ease-out;
     }
     .product-card.card-blue {
-      background: linear-gradient(145deg, rgba(99,130,255,0.45) 0%, rgba(99,130,255,0.28) 50%, rgba(99,130,255,0.16) 100%);
-      box-shadow: rgba(99,130,255,0.12) 0px 1px 0px inset, rgba(99,130,255,0.09) 0px 0px 0px 1px;
+      background: linear-gradient(145deg, rgba(99,130,255,0.65) 0%, rgba(99,130,255,0.45) 50%, rgba(99,130,255,0.28) 100%);
+      box-shadow: rgba(99,130,255,0.15) 0px 1px 0px inset, rgba(99,130,255,0.12) 0px 0px 0px 1px;
     }
     .product-card.card-green {
-      background: linear-gradient(145deg, rgba(0,216,145,0.45) 0%, rgba(0,216,145,0.28) 50%, rgba(0,216,145,0.16) 100%);
-      box-shadow: rgba(0,216,145,0.12) 0px 1px 0px inset, rgba(0,216,145,0.09) 0px 0px 0px 1px;
+      background: linear-gradient(145deg, rgba(0,216,145,0.65) 0%, rgba(0,216,145,0.45) 50%, rgba(0,216,145,0.28) 100%);
+      box-shadow: rgba(0,216,145,0.15) 0px 1px 0px inset, rgba(0,216,145,0.12) 0px 0px 0px 1px;
     }
     .product-card:hover {
       transform: translateY(-4px);
@@ -549,6 +547,9 @@
   </style>
 </head>
 <body>
+
+<!-- ═══ Background Glow ═════════════════════════════════════ -->
+<div class="bg-glow-fixed"></div>
 
 <!-- ═══ Navbar ═══════════════════════════════════════════════ -->
 <nav class="navbar">
