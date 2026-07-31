@@ -300,8 +300,8 @@
 
     /* ═══ Product Cards ════════════════════════════════════════ */
     .products-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 20px; max-width: 740px; margin: 0 auto;
     }
     .product-card {
       position: relative; border-radius: 20px;
@@ -465,8 +465,8 @@
     }
     .footer-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      gap: 32px; margin-bottom: 48px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px; margin-bottom: 48px; justify-items: start;
     }
     .footer-brand-col .footer-logo {
       display: flex; align-items: center; gap: 8px;
@@ -524,7 +524,7 @@
       .products-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
       .how-steps { flex-direction: column; align-items: center; gap: 40px; }
       .how-connector { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(255,255,255,0.14), rgba(255,255,255,0.03)); margin-top: 0; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto 48px; }
       .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
     }
   </style>
