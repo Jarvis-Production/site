@@ -207,12 +207,6 @@ document.getElementById('authForm').addEventListener('submit', async function(e)
 
         localStorage.setItem('jx_s', JSON.stringify(data));
 
-        if (!isLogin && data.user?.id) {
-            await sbApi('/rest/v1/profiles', 'POST', {
-                id: data.user.id, username: username, license_key: ''
-            });
-        }
-
         const userId = data.user?.id;
         let user = { username: username, license_key: '' };
         if (userId) {
