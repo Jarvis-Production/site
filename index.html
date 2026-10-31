@@ -249,20 +249,33 @@ section.active { display: block; }
     <section id="voice">
       <div class="card glass">
         <h2>Голос</h2>
-        <div class="hint">Нейроголоса Microsoft. Изменения применяются ко всем колонкам сразу.</div>
+        <div class="hint">Нейроголоса Gemini звучат почти как живой человек: нужен бесплатный ключ ниже. Без ключа или когда дневной лимит исчерпан, колонка говорит голосом Google. Изменения применяются ко всем колонкам сразу.</div>
         <div class="field"><label>Голос</label>
           <select class="input" id="voiceName">
-            <option value="ru-RU-DmitryNeural">Дмитрий · мужской</option>
-            <option value="ru-RU-SvetlanaNeural">Светлана · женский</option>
-            <option value="ru-RU-DariyaNeural">Дария · женский</option>
+            <optgroup label="Gemini · нейроголоса">
+              <option value="gemini:Charon">Charon · мужской, спокойный</option>
+              <option value="gemini:Orus">Orus · мужской, уверенный</option>
+              <option value="gemini:Fenrir">Fenrir · мужской, энергичный</option>
+              <option value="gemini:Puck">Puck · мужской, весёлый</option>
+              <option value="gemini:Kore">Kore · женский, твёрдый</option>
+              <option value="gemini:Aoede">Aoede · женский, лёгкий</option>
+              <option value="gemini:Leda">Leda · женский, юный</option>
+              <option value="gemini:Zephyr">Zephyr · женский, яркий</option>
+            </optgroup>
+            <optgroup label="Без ключа">
+              <option value="google">Google · стандартный</option>
+            </optgroup>
           </select>
         </div>
         <div class="grid">
           <div class="field"><label>Скорость речи</label>
             <div class="range"><input type="range" id="voice_rate" min="-30" max="40" step="1"><output id="voice_rateOut"></output></div></div>
-          <div class="field"><label>Высота голоса</label>
-            <div class="range"><input type="range" id="voice_pitch" min="-20" max="20" step="1"><output id="voice_pitchOut"></output></div></div>
+
         </div>
+        <div class="field" style="margin-top:6px"><label>Ключ Gemini (Google AI Studio)</label>
+          <div class="secret-state" id="geminiState" style="margin-bottom:8px">—</div>
+          <div class="row"><input class="input" id="geminiKey" type="password" placeholder="AIza…" style="flex:1;min-width:220px" autocomplete="off">
+          <button class="btn" id="saveGemini">Заменить ключ</button></div></div>
         <div class="field"><label>Текст для прослушивания</label><input class="input" id="previewText" value="Привет! Я Сириус. Чем займёмся?"></div>
         <div class="actions">
           <button class="btn" id="previewBtn">▶ Прослушать</button>
@@ -397,7 +410,7 @@ $('tabs').addEventListener('click', (e) => {
   if (!tab) return;
   document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('section').forEach((s) => s.classList.toggle('active', s.id === tab));
-  ({ overview: loadOverview, family: loadFamily, devices: loadDevices, logs: loadLogs, core: loadKeyState })[tab]?.();
+  ({ overview: loadOverview, family: loadFamily, devices: loadDevices, logs: loadLogs, core: loadKeyState, voice: loadKeyState })[tab]?.();
 });
 
 // ---------- settings ----------
@@ -410,16 +423,16 @@ async function loadSettings() {
   const { data, error } = await sb.from('settings').select('*').eq('id', 1).single();
   if (error) return toast('Не удалось загрузить настройки: ' + error.message, true);
   settings = data;
-  for (const k of ['model', 'max_tokens', 'temperature', 'voice_rate', 'voice_pitch', 'assistant_name', 'follow_up_seconds', 'history_turns', 'system_prompt']) $(k).value = data[k];
+  for (const k of ['model', 'max_tokens', 'temperature', 'voice_rate', 'assistant_name', 'follow_up_seconds', 'history_turns', 'system_prompt']) $(k).value = data[k];
   $('voiceName').value = data.voice;
   $('wake_words').value = data.wake_words.join(', ');
   bindRange('temperature', (v) => Number(v).toFixed(2));
   bindRange('voice_rate', (v) => (v > 0 ? '+' : '') + v + '%');
-  bindRange('voice_pitch', (v) => (v > 0 ? '+' : '') + v + ' Гц');
+
 }
 const groups = {
   core: () => ({ model: $('model').value.trim(), max_tokens: +$('max_tokens').value, temperature: +$('temperature').value }),
-  voice: () => ({ voice: $('voiceName').value, voice_rate: +$('voice_rate').value, voice_pitch: +$('voice_pitch').value }),
+  voice: () => ({ voice: $('voiceName').value, voice_rate: +$('voice_rate').value }),
   persona: () => ({
     assistant_name: $('assistant_name').value.trim(),
     wake_words: $('wake_words').value.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
@@ -437,9 +450,20 @@ document.querySelectorAll('[data-save]').forEach((b) => b.addEventListener('clic
 // ---------- OpenRouter key ----------
 async function loadKeyState() {
   const { data } = await sb.rpc('secret_status');
-  const row = (data || []).find((r) => r.name === 'openrouter_key');
-  $('keyState').innerHTML = row ? `Ключ задан <b>✓</b> · обновлён ${esc(ago(row.updated_at))}` : 'Ключ ещё не задан — колонки не смогут думать.';
+  const state = (name, missing) => {
+    const row = (data || []).find((r) => r.name === name);
+    return row ? `Ключ задан <b>✓</b> · обновлён ${esc(ago(row.updated_at))}` : missing;
+  };
+  $('keyState').innerHTML = state('openrouter_key', 'Ключ ещё не задан — колонки не смогут думать.');
+  $('geminiState').innerHTML = state('gemini_key', 'Ключ не задан — колонки говорят голосом Google. Получить бесплатно: <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>');
 }
+$('saveGemini').onclick = async () => {
+  const key = $('geminiKey').value.trim();
+  if (!key.startsWith('AIza')) return toast('Ключ Gemini начинается с AIza', true);
+  const { error } = await sb.rpc('set_secret', { p_name: 'gemini_key', p_value: key });
+  $('geminiKey').value = '';
+  error ? toast('Ошибка: ' + error.message, true) : (toast('Ключ Gemini сохранён'), loadKeyState());
+};
 $('saveKey').onclick = async () => {
   const key = $('openrouterKey').value.trim();
   if (!key.startsWith('sk-or-')) return toast('Это не похоже на ключ OpenRouter', true);
@@ -456,15 +480,23 @@ $('previewBtn').onclick = async () => {
     const r = await fetch(SERVER + '/preview', {
       method: 'POST',
       headers: { authorization: 'Bearer ' + session.access_token, 'content-type': 'application/json' },
-      body: JSON.stringify({ text: $('previewText').value, voice: $('voiceName').value, voice_rate: +$('voice_rate').value, voice_pitch: +$('voice_pitch').value }),
+      body: JSON.stringify({ text: $('previewText').value, voice: $('voiceName').value, voice_rate: +$('voice_rate').value }),
     });
     if (!r.ok) throw new Error((await r.json()).error || r.status);
-    const pcm = new Int16Array(await r.arrayBuffer());
-    if (!pcm.length) throw new Error('пустой ответ синтеза');
-    const ctx = new AudioContext({ sampleRate: 16000 });
-    const buf = ctx.createBuffer(1, pcm.length, 16000);
-    const ch = buf.getChannelData(0);
-    for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+    const bytes = await r.arrayBuffer();
+    if (!bytes.byteLength) throw new Error('пустой ответ синтеза');
+    const engine = r.headers.get('x-sirius-voice');
+    if ($('voiceName').value.startsWith('gemini:') && engine !== 'gemini') toast('Gemini недоступен (нет ключа или лимит) — звучит голос Google', true);
+    let buf;
+    const ctx = new AudioContext();
+    if ((r.headers.get('content-type') || '').includes('mpeg')) {
+      buf = await ctx.decodeAudioData(bytes);
+    } else {
+      const pcm = new Int16Array(bytes);
+      buf = ctx.createBuffer(1, pcm.length, 16000);
+      const ch = buf.getChannelData(0);
+      for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+    }
     const src = ctx.createBufferSource();
     src.buffer = buf;
     src.connect(ctx.destination);
