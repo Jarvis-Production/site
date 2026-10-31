@@ -199,6 +199,7 @@ section.active { display: block; }
     <button data-tab="family">Семья</button>
     <button data-tab="devices">Устройства</button>
     <button data-tab="logs">Журнал</button>
+    <button data-tab="tester">Тест колонки</button>
   </nav>
   <main>
     <!-- Overview -->
@@ -345,6 +346,31 @@ section.active { display: block; }
       <div class="card glass">
         <h2>Адрес сервера для колонок</h2>
         <div class="token" id="serverUrl"></div>
+      </div>
+    </section>
+
+    <!-- Virtual speaker -->
+    <section id="tester">
+      <div class="card glass">
+        <h2>Тест колонки в браузере</h2>
+        <div class="hint">Браузер работает как колонка: записывает микрофон компьютера, отправляет звук на сервер и проигрывает ответ — та же цепочка, что у настоящей колонки. Нужен токен любой колонки из раздела «Устройства».</div>
+        <div class="row">
+          <input class="input" id="vsToken" type="password" placeholder="Токен колонки sk-dev-…" style="flex:1;min-width:240px" autocomplete="off">
+        </div>
+        <div style="display:grid;place-items:center;margin:26px 0 10px">
+          <button class="btn primary" id="vsTalk" style="width:150px;height:150px;border-radius:50%;font-size:15px;flex-direction:column">
+            <span style="font-size:34px">🎤</span><span id="vsLabel">Удерживайте<br>и говорите</span>
+          </button>
+          <label class="hint" style="margin-top:14px;display:flex;gap:8px;align-items:center;cursor:pointer">
+            <input type="checkbox" id="vsWake"> требовать «Сириус» (как колонка без кнопки)
+          </label>
+        </div>
+        <div class="stats" style="margin-top:6px">
+          <div class="stat glass"><div class="k">Ответ через</div><div class="v" id="vsLatency">—</div></div>
+          <div class="stat glass"><div class="k">Громкость</div><div class="v" id="vsVolume">70</div></div>
+          <div class="stat glass"><div class="k">Таймеры</div><div class="v" id="vsTimers" style="font-size:15px">нет</div></div>
+        </div>
+        <div class="list" id="vsLog"></div>
       </div>
     </section>
 
@@ -601,6 +627,143 @@ async function loadOverview() {
   $('stModel').textContent = settings?.model || '—';
   $('recentLogs').innerHTML = renderLogs(recent.data || []);
 }
+
+// ---------- virtual speaker ----------
+const vs = { volume: 70, timers: [], recording: null };
+try { $('vsToken').value = localStorage.getItem('sirius-test-token') || ''; } catch {}
+$('vsToken').addEventListener('change', () => { try { localStorage.setItem('sirius-test-token', $('vsToken').value.trim()); } catch {} });
+
+function vsLog(text, cls = '') {
+  const el = document.createElement('div');
+  el.className = 'log ' + cls;
+  el.innerHTML = text;
+  $('vsLog').prepend(el);
+}
+function vsRenderTimers() {
+  $('vsTimers').textContent = vs.timers.length
+    ? vs.timers.map((t) => `${t.label} · ${Math.max(0, Math.round((t.due - Date.now()) / 1000))} с`).join(', ')
+    : 'нет';
+}
+setInterval(() => {
+  const now = Date.now();
+  for (const t of vs.timers.filter((t) => t.due <= now)) {
+    vs.timers = vs.timers.filter((x) => x !== t);
+    vsLog(`⏰ Сработал таймер «${esc(t.label)}»`);
+    vsSend(new Int16Array(0), '?event=timer&label=' + encodeURIComponent(t.label));
+  }
+  vsRenderTimers();
+}, 1000);
+
+async function vsStart() {
+  if (!$('vsToken').value.trim()) return toast('Вставьте токен колонки', true);
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } });
+  const ctx = new AudioContext({ sampleRate: 16000 });
+  const src = ctx.createMediaStreamSource(stream);
+  const proc = ctx.createScriptProcessor(4096, 1, 1);
+  const chunks = [];
+  proc.onaudioprocess = (e) => chunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+  src.connect(proc);
+  proc.connect(ctx.destination);
+  vs.recording = { stream, ctx, proc, chunks };
+  $('vsLabel').innerHTML = 'Говорите…<br>отпустите';
+}
+
+async function vsStop() {
+  const rec = vs.recording;
+  if (!rec) return;
+  vs.recording = null;
+  rec.proc.disconnect();
+  rec.stream.getTracks().forEach((t) => t.stop());
+  await rec.ctx.close();
+  $('vsLabel').innerHTML = 'Думаю…';
+  const total = rec.chunks.reduce((n, c) => n + c.length, 0);
+  const pcm = new Int16Array(total);
+  let off = 0;
+  for (const c of rec.chunks) for (let i = 0; i < c.length; i++) pcm[off++] = Math.max(-1, Math.min(1, c[i])) * 32767;
+  await vsSend(pcm, '');
+  $('vsLabel').innerHTML = 'Удерживайте<br>и говорите';
+}
+
+async function vsSend(pcm, query) {
+  const started = performance.now();
+  try {
+    const r = await fetch(SERVER + '/talk' + query, {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer ' + $('vsToken').value.trim(),
+        'content-type': 'audio/L16; rate=16000; channels=1',
+        'x-sirius-force': $('vsWake').checked ? '0' : '1',
+      },
+      body: pcm.buffer,
+    });
+    if (r.status === 204) return vsLog('Сервер решил, что фраза не для Сириуса (нет слова «Сириус» или пустая запись).');
+    if (r.status === 401) return vsLog('Токен не подошёл — проверьте его в разделе «Устройства».', 'err');
+    if (!r.ok) return vsLog('Ошибка сервера: ' + r.status, 'err');
+    const heard = decodeURIComponent(r.headers.get('x-sirius-heard') || '');
+    // Framed stream: 1 byte type, u32 LE length, payload. 'A' PCM, 'M' MP3, 'J' actions.
+    const reader = r.body.getReader();
+    let buf = new Uint8Array(0);
+    const out = new AudioContext();
+    let playAt = out.currentTime;
+    let first = null;
+    let actions = {};
+    const play = async (type, payload) => {
+      let audio;
+      if (type === 'M') {
+        audio = await out.decodeAudioData(payload.slice().buffer);
+      } else {
+        const s = new Int16Array(payload.slice().buffer);
+        audio = out.createBuffer(1, s.length, 16000);
+        const ch = audio.getChannelData(0);
+        for (let i = 0; i < s.length; i++) ch[i] = s[i] / 32768;
+      }
+      const node = out.createBufferSource();
+      const gain = out.createGain();
+      gain.gain.value = (vs.volume / 100) ** 2 * 1.6;
+      node.buffer = audio;
+      node.connect(gain).connect(out.destination);
+      playAt = Math.max(playAt, out.currentTime);
+      node.start(playAt);
+      playAt += audio.duration;
+    };
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (value) {
+        const merged = new Uint8Array(buf.length + value.length);
+        merged.set(buf); merged.set(value, buf.length);
+        buf = merged;
+      }
+      while (buf.length >= 5) {
+        const len = new DataView(buf.buffer, buf.byteOffset + 1, 4).getUint32(0, true);
+        if (buf.length < 5 + len) break;
+        const type = String.fromCharCode(buf[0]);
+        const payload = buf.slice(5, 5 + len);
+        buf = buf.slice(5 + len);
+        if (type === 'J') actions = JSON.parse(new TextDecoder().decode(payload));
+        else {
+          if (first === null) { first = (performance.now() - started) / 1000; $('vsLatency').textContent = first.toFixed(1) + ' с'; }
+          await play(type, payload);
+        }
+      }
+      if (done) break;
+    }
+    if (actions.volume != null) { vs.volume = actions.volume; $('vsVolume').textContent = vs.volume; }
+    if (actions.cancel_timers) vs.timers = [];
+    for (const t of actions.timers || []) vs.timers.push({ label: t.label, due: Date.now() + t.seconds * 1000 });
+    vsRenderTimers();
+    const acts = [];
+    if (actions.timers?.length) acts.push('таймер: ' + actions.timers.map((t) => `${t.label} (${t.seconds} с)`).join(', '));
+    if (actions.cancel_timers) acts.push('таймеры отменены');
+    if (actions.volume != null) acts.push('громкость ' + actions.volume);
+    vsLog(`${heard ? `<div class="q">«${esc(heard)}»</div>` : ''}<div class="a">Ответ через ${first?.toFixed(1) ?? '—'} с${acts.length ? ' · ' + esc(acts.join(' · ')) : ''}</div>`);
+  } catch (e) {
+    vsLog('Ошибка: ' + esc(e.message), 'err');
+  }
+}
+
+const vsBtn = $('vsTalk');
+vsBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); vsStart().catch((err) => toast('Микрофон: ' + err.message, true)); });
+['pointerup', 'pointerleave'].forEach((ev) => vsBtn.addEventListener(ev, () => vsStop()));
 
 start();
 </script>
