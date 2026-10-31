@@ -54,8 +54,9 @@ def tts(req: Req, authorization: str = Header(default="")):
     for part in chunks(req.text.strip()[:3000]):
         try:
             a = model.apply_tts(text=part, speaker=speaker, sample_rate=48000, put_accent=True, put_yo=True)
-        except Exception:
-            continue  # text without speakable characters
+        except Exception as exc:  # e.g. text without speakable characters
+            print(f"synthesis failed for {part!r}: {exc!r}", flush=True)
+            continue
         # Speed change by resampling in time, then 48 kHz -> 16 kHz.
         rate = min(max(req.rate, 0.7), 1.4)
         target = int(len(a) / rate / 3)
