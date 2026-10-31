@@ -1,817 +1,561 @@
-<!DOCTYPE html>
-<html class="dark" lang="ru" style="color-scheme: dark;">
+<!doctype html>
+<html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0a0c12">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0c12">
-  <title>Jartix — Контроль, скорость и точность</title>
-  <meta name="description" content="Поднимите свой игровой процесс на новый уровень с нашим клиентом">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S.I.R.I.U.S · Панель</title>
+<meta name="description" content="Панель управления голосовым ассистентом S.I.R.I.U.S">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #04070e;
+  --glass: rgba(16, 26, 46, .55);
+  --glass-strong: rgba(18, 30, 54, .78);
+  --line: rgba(120, 200, 255, .14);
+  --line-strong: rgba(80, 220, 255, .45);
+  --text: #d6e4f5;
+  --muted: #7d93b2;
+  --accent: #28dcff;
+  --accent-2: #8f6bff;
+  --danger: #ff5f7a;
+  --ok: #3cf0b4;
+  --radius: 18px;
+  --font: 'Manrope', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  font-family: var(--font); color: var(--text); background: var(--bg);
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+/* Ambient core glow + dot grid, like the desktop app */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -2;
+  background:
+    radial-gradient(800px 600px at 50% 18%, rgba(40, 220, 255, .16), transparent 60%),
+    radial-gradient(700px 500px at 85% 90%, rgba(143, 107, 255, .10), transparent 60%),
+    var(--bg);
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; opacity: .35;
+  background-image: radial-gradient(rgba(140, 200, 255, .22) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(circle at 50% 30%, black, transparent 75%);
+}
+a { color: var(--accent); }
+button, input, select, textarea { font: inherit; color: inherit; }
 
-    :root {
-      --bg: #0a0c12;
-      --bg-delta: #0a0c12;
-      --primary: #6382FF;
-      --primary-rgb: 99, 130, 255;
-      --primary-glow: rgba(99, 130, 255, 0.25);
-      --text: #e8eaef;
-      --font: 'Inter', system-ui, sans-serif;
-      --font-title: 'Manrope', system-ui, sans-serif;
-    }
+.glass {
+  background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius);
+  backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 20px 60px rgba(0,0,0,.35);
+}
 
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: white;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-      min-height: 100vh;
-      position: relative;
-    }
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: -2;
-      background: url('img/hero.jpg') center top / cover no-repeat;
-    }
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: -1;
-      background: linear-gradient(
-        to bottom,
-        rgba(10, 12, 18, 0.3) 0%,
-        rgba(10, 12, 18, 0.55) 30%,
-        rgba(10, 12, 18, 0.8) 55%,
-        rgba(10, 12, 18, 0.93) 75%,
-        #0a0c12 90%
-      );
-    }
-    .bg-glow-fixed {
-      position: fixed; inset: 0; z-index: -1;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -5%, rgba(99, 130, 255, 0.2) 0%, transparent 55%),
-        radial-gradient(ellipse 50% 40% at 15% 45%, rgba(99, 130, 255, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse 50% 40% at 85% 55%, rgba(0, 216, 145, 0.06) 0%, transparent 50%);
-      pointer-events: none;
-      display: none;
-    }
-    .lang-fade {
-      transition: opacity 0.35s ease;
-    }
-    .lang-fade.fading {
-      opacity: 0;
-    }
+/* ---------- login ---------- */
+#login { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+.login-card { width: min(420px, 100%); padding: 36px 32px; text-align: center; animation: rise .7s cubic-bezier(.2,.9,.2,1); }
+.orb { width: 120px; height: 120px; margin: 0 auto 22px; position: relative; }
+.orb i { position: absolute; inset: 0; border-radius: 50%; }
+.orb .c { inset: 30px; background: radial-gradient(circle, #c8f8ff 0 8%, #28dcff 22%, #0a3a5a 58%, #061226 72%); box-shadow: 0 0 40px rgba(40,220,255,.55); animation: breathe 3s ease-in-out infinite; }
+.orb .r1 { border: 1.5px solid rgba(40,220,255,.55); border-top-color: transparent; border-bottom-color: transparent; animation: spin 6s linear infinite; }
+.orb .r2 { inset: 12px; border: 1px dashed rgba(40,220,255,.35); animation: spin 14s linear infinite reverse; }
+.brand { font-weight: 800; letter-spacing: .38em; font-size: 22px; }
+.sub { color: var(--muted); font-size: 13px; margin: 6px 0 26px; }
+.field { text-align: left; margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; letter-spacing: .04em; }
+.input, select.input, textarea.input {
+  width: 100%; padding: 12px 14px; border-radius: 12px; outline: none;
+  background: rgba(255,255,255,.035); border: 1px solid var(--line); transition: border .2s, box-shadow .2s;
+}
+textarea.input { resize: vertical; min-height: 140px; line-height: 1.5; }
+.input:focus { border-color: var(--line-strong); box-shadow: 0 0 0 4px rgba(40,220,255,.08); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 18px; border-radius: 12px; cursor: pointer; font-weight: 600;
+  background: rgba(255,255,255,.05); border: 1px solid var(--line);
+  backdrop-filter: blur(10px); transition: transform .15s, background .2s, border .2s, box-shadow .2s;
+}
+.btn:hover { background: rgba(40,220,255,.10); border-color: var(--line-strong); box-shadow: 0 0 24px rgba(40,220,255,.15); }
+.btn:active { transform: scale(.97); }
+.btn.primary { background: linear-gradient(135deg, rgba(40,220,255,.85), rgba(143,107,255,.85)); border-color: transparent; color: #021018; }
+.btn.primary:hover { box-shadow: 0 0 30px rgba(40,220,255,.35); }
+.btn.danger:hover { background: rgba(255,95,122,.12); border-color: rgba(255,95,122,.5); }
+.btn.wide { width: 100%; padding: 13px; }
+.error { color: var(--danger); font-size: 13px; min-height: 18px; margin-top: 10px; }
 
-    /* ═══ Animations ═══════════════════════════════════════════ */
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-    @keyframes kenBurns {
-      0% { transform: scale(1) translate(0, 0); }
-      25% { transform: scale(1.05) translate(-1%, -1%); }
-      50% { transform: scale(1.08) translate(0, -2%); }
-      75% { transform: scale(1.05) translate(1%, -1%); }
-      100% { transform: scale(1) translate(0, 0); }
-    }
-    @keyframes gradientText {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    @keyframes letterReveal {
-      from { opacity: 0; filter: blur(6px); transform: translateY(12px); }
-      to { opacity: 1; filter: blur(0); transform: translateY(0); }
-    }
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+/* ---------- app shell ---------- */
+#app { display: none; min-height: 100vh; }
+header {
+  position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px;
+  padding: 14px clamp(16px, 4vw, 40px); border-bottom: 1px solid var(--line);
+  background: rgba(4,7,14,.6); backdrop-filter: blur(16px);
+}
+header .logo { display: flex; align-items: center; gap: 12px; }
+header .logo b { letter-spacing: .32em; font-weight: 800; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); animation: breathe 2s infinite; }
+header .spacer { flex: 1; }
+header .who { color: var(--muted); font-size: 13px; }
+nav { display: flex; gap: 6px; padding: 18px clamp(16px, 4vw, 40px) 0; overflow-x: auto; scrollbar-width: none; }
+nav button {
+  white-space: nowrap; padding: 9px 16px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 14px;
+  background: transparent; border: 1px solid transparent; color: var(--muted); transition: all .2s;
+}
+nav button:hover { color: var(--text); background: rgba(255,255,255,.04); }
+nav button.active { color: var(--text); background: var(--glass-strong); border-color: var(--line-strong); box-shadow: 0 0 20px rgba(40,220,255,.12); }
+main { padding: 22px clamp(16px, 4vw, 40px) 60px; max-width: 1100px; }
+section { display: none; animation: rise .45s cubic-bezier(.2,.9,.2,1); }
+section.active { display: block; }
+.card { padding: 24px; margin-bottom: 18px; }
+.card h2 { font-size: 17px; margin-bottom: 4px; }
+.card .hint { color: var(--muted); font-size: 13px; margin-bottom: 18px; line-height: 1.5; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 18px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
+.range { display: flex; align-items: center; gap: 12px; }
+.range input { flex: 1; accent-color: var(--accent); }
+.range output { font-family: var(--mono); font-size: 13px; color: var(--accent); min-width: 54px; text-align: right; }
 
-    .animate-fade-in-down { animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .animate-ken-burns { animation: kenBurns 30s ease-in-out infinite; }
-    .gradient-text {
-      background: linear-gradient(135deg, #6382FF, #9BB8FF, #B0C8FF, #9BB8FF, #6382FF);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradientText 6s ease infinite;
-    }
-    .letter { display: inline-block; opacity: 0; backface-visibility: hidden; }
-    .letter.revealed {
-      animation: letterReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      animation-delay: var(--d);
-    }
-    .btn-shimmer { position: relative; overflow: hidden; }
-    .btn-shimmer::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transform: translateX(-100%);
-    }
-    .btn-shimmer:hover::after { animation: shimmer 0.6s ease; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.stat { padding: 18px 20px; }
+.stat .k { color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.stat .v { font-size: 26px; font-weight: 800; margin-top: 6px; }
 
-    /* ── Logo stroke-draw animation (Delta style) ────────────── */
-    @keyframes logoDraw { from { stroke-dasharray: 100 100; stroke-dashoffset: 100; } to { stroke-dasharray: 100 0; stroke-dashoffset: 0; } }
-    @keyframes logoFillIn { from { opacity: 0; } to { opacity: 1; } }
-    .logo-stroke, .logo-fill { backface-visibility: hidden; will-change: transform, opacity; transform: translateZ(0); }
-    .logo-stroke { stroke-dasharray: 100 100; animation: logoDraw 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-    .logo-fill { opacity: 0; animation: logoFillIn 0.6s ease 1s forwards; }
-    .logo-anim .logo-stroke:nth-child(2) { animation-delay: 0.1s; }
-    .logo-anim .logo-stroke:nth-child(3) { animation-delay: 0.2s; }
-    .logo-anim .logo-stroke:nth-child(4) { animation-delay: 0.3s; }
-    .logo-anim .logo-stroke:nth-child(5) { animation-delay: 0.4s; }
-    .logo-anim .logo-fill:nth-child(6) { animation-delay: 1.1s; }
-    .logo-anim .logo-fill:nth-child(7) { animation-delay: 1.2s; }
-    .logo-anim .logo-fill:nth-child(8) { animation-delay: 1.3s; }
-    .logo-anim .logo-fill:nth-child(9) { animation-delay: 1.4s; }
-    .logo-anim .logo-fill:nth-child(10) { animation-delay: 1.5s; }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px;
+  background: rgba(255,255,255,.03); border: 1px solid var(--line); transition: border .2s, background .2s;
+}
+.item:hover { border-color: var(--line-strong); background: rgba(40,220,255,.04); }
+.item .main { flex: 1; min-width: 0; }
+.item .title { font-weight: 700; }
+.item .meta { color: var(--muted); font-size: 12.5px; margin-top: 3px; overflow-wrap: anywhere; }
+.badge { font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.badge.on { color: var(--ok); border-color: rgba(60,240,180,.4); }
+.badge.off { color: var(--danger); border-color: rgba(255,95,122,.4); }
+.empty { color: var(--muted); font-size: 14px; padding: 18px 4px; }
 
-    /* ═══ Navbar ═══════════════════════════════════════════════ */
-    .navbar {
-      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-      z-index: 50; display: flex; align-items: center;
-      padding: 8px 10px 8px 20px;
-      border-radius: 9999px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(60px) saturate(150%);
-      -webkit-backdrop-filter: blur(60px) saturate(150%);
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-      animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none; color: white; padding-right: 20px;
-    }
-    .nav-logo svg { flex-shrink: 0; }
-    .nav-logo-text {
-      font-family: var(--font-title); font-size: 15px;
-      font-weight: 700; color: rgba(255,255,255,0.9);
-      letter-spacing: -0.02em;
-    }
-    .nav-links { display: flex; align-items: center; gap: 2px; }
-    .nav-links a {
-      display: flex; align-items: center; gap: 7px;
-      padding: 7px 16px; border-radius: 9999px;
-      color: rgba(255,255,255,0.3); text-decoration: none;
-      font-size: 13px; font-weight: 500;
-      font-family: var(--font);
-      transition: all 0.2s;
-    }
-    .nav-links a:hover { color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.04); }
-    .nav-links a svg { width: 14px; height: 14px; }
-    .nav-lang {
-      display: flex; align-items: center; margin: 0 4px;
-      border-radius: 9999px; border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.02); padding: 2px;
-    }
-    .nav-lang button {
-      padding: 5px 10px; border-radius: 9999px; border: none;
-      font-size: 11px; font-weight: 500; font-family: var(--font);
-      cursor: pointer; transition: all 0.2s;
-    }
-    .nav-lang button.active {
-      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
-    }
-    .nav-lang button:not(.active) {
-      background: transparent; color: rgba(255,255,255,0.25);
-    }
-    .nav-lang button:not(.active):hover { color: rgba(255,255,255,0.45); }
-    .nav-cabinet {
-      display: flex; align-items: center; gap: 7px;
-      padding: 8px 20px; border-radius: 12px;
-      background: var(--primary); color: #0a0c12;
-      font-size: 13px; font-weight: 600; font-family: var(--font);
-      text-decoration: none; margin-left: 4px;
-      transition: all 0.2s;
-    }
-    .nav-cabinet:hover {
-      background: #7b94ff;
-      box-shadow: 0 0 20px rgba(99,130,255,0.25);
-    }
-    .nav-cabinet svg { width: 14px; height: 14px; }
+.log { padding: 14px 16px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid var(--line); }
+.log .q { font-weight: 600; }
+.log .a { color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.log .t { font-family: var(--mono); font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+.log.err { border-color: rgba(255,95,122,.35); }
 
-    /* ═══ Hero ═════════════════════════════════════════════════ */
-    .hero {
-      position: relative; height: 100vh; display: flex;
-      align-items: center; justify-content: center;
-    }
-    .hero-bg {
-      display: none;
-    }
-    .hero-overlay {
-      display: none;
-    }
-    .hero-content {
-      position: relative; z-index: 10;
-      display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      padding: 0 24px;
-    }
-    .hero-logo { margin-bottom: 28px; }
-    .hero-logo svg { width: 56px; height: 48px; }
-    .hero h1 {
-      font-family: var(--font-title);
-      font-size: clamp(3rem, 8vw, 5.5rem);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -0.04em; color: white;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
-    }
-    .hero-sub {
-      margin-top: 24px; max-width: 560px;
-      font-size: clamp(14px, 2vw, 17px);
-      color: rgba(255,255,255,0.6);
-      line-height: 1.7; font-family: var(--font);
-      text-shadow: 0 1px 6px rgba(0,0,0,0.25);
-    }
-    .hero-btns {
-      display: flex; align-items: center; gap: 16px;
-      margin-top: 36px;
-    }
+.token {
+  font-family: var(--mono); font-size: 14px; padding: 14px; border-radius: 12px; margin: 12px 0;
+  background: rgba(40,220,255,.06); border: 1px dashed var(--line-strong); overflow-wrap: anywhere; user-select: all;
+}
+.secret-state { font-size: 13px; color: var(--muted); }
+.secret-state b { color: var(--ok); }
 
-    /* ═══ Buttons ══════════════════════════════════════════════ */
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 14px 32px; border-radius: 16px;
-      font-family: var(--font); font-size: 15px;
-      font-weight: 600; text-decoration: none;
-      transition: all 0.3s; cursor: pointer; border: none;
-    }
-    .btn-primary {
-      background: rgba(99, 130, 255, 0.25);
-      color: rgba(255,255,255,0.9);
-      border: 1px solid rgba(99, 130, 255, 0.3);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-    }
-    .btn-primary:hover {
-      background: rgba(99, 130, 255, 0.4);
-      box-shadow: 0 0 50px rgba(99,130,255,0.25);
-      color: #fff;
-    }
-    .btn-glass {
-      color: rgba(255,255,255,0.5);
-      border: 1px solid rgba(255,255,255,0.15);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      background: rgba(255,255,255,0.06);
-    }
-    .btn-glass:hover {
-      color: rgba(255,255,255,0.8);
-      background: rgba(255,255,255,0.1);
-    }
-    .btn svg { width: 16px; height: 16px; }
+/* ---------- toast & modal ---------- */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 30px); opacity: 0; pointer-events: none;
+  padding: 12px 20px; border-radius: 14px; font-size: 14px; transition: all .35s cubic-bezier(.2,.9,.2,1); z-index: 50;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+#modal { position: fixed; inset: 0; display: none; place-items: center; padding: 16px; z-index: 40; background: rgba(2,4,10,.6); backdrop-filter: blur(6px); }
+#modal.show { display: grid; }
+#modal .box { width: min(520px, 100%); padding: 26px; animation: pop .35s cubic-bezier(.2,1.3,.4,1); }
 
-    /* ═══ Section (Products) ═══════════════════════════════════ */
-    .section-products {
-      position: relative; overflow: visible;
-    }
-    .section-products .bg-img {
-      display: none;
-    }
-    .section-products .bg-gradient-top {
-      display: none;
-    }
-    .section-products .bg-gradient-bottom {
-      display: none;
-    }
-    .section-products .bg-radial {
-      display: none;
-    }
-    .products-inner {
-      position: relative; z-index: 10;
-      padding: 120px 24px 140px;
-      max-width: 1100px; margin: 0 auto;
-    }
-    .section-title {
-      text-align: center; margin-bottom: 56px;
-    }
-    .section-title h2 {
-      font-family: var(--font-title);
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      font-weight: 800; color: white;
-      margin-bottom: 16px;
-    }
-    .section-title p {
-      font-size: 15px; color: rgba(255,255,255,0.35);
-      max-width: 500px; margin: 0 auto;
-      line-height: 1.7;
-    }
-
-    /* ═══ Product Cards ════════════════════════════════════════ */
-    .products-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 20px; max-width: 740px; margin: 0 auto;
-    }
-    .product-card {
-      position: relative; border-radius: 20px;
-      overflow: hidden; height: 340px;
-      cursor: pointer;
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      transition: all 0.5s ease-out;
-    }
-    .product-card.card-blue {
-      background: linear-gradient(145deg, rgba(99,130,255,0.35) 0%, rgba(99,130,255,0.22) 50%, rgba(99,130,255,0.12) 100%);
-      box-shadow: rgba(99,130,255,0.15) 0px 1px 0px inset, rgba(99,130,255,0.12) 0px 0px 0px 1px;
-    }
-    .product-card.card-green {
-      background: linear-gradient(145deg, rgba(0,216,145,0.35) 0%, rgba(0,216,145,0.22) 50%, rgba(0,216,145,0.12) 100%);
-      box-shadow: rgba(0,216,145,0.15) 0px 1px 0px inset, rgba(0,216,145,0.12) 0px 0px 0px 1px;
-    }
-    .product-card:hover {
-      transform: translateY(-4px);
-    }
-    .product-card .card-bg {
-      position: absolute; inset: 0;
-    }
-    .product-card .card-decorations {
-      position: absolute; inset: 0;
-    }
-    .product-card .card-center-logo {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.5s ease-out;
-    }
-    .product-card:hover .card-center-logo { transform: scale(1.25); }
-    .product-card .card-center-logo svg { width: 80px; height: 80px; opacity: 0.25; }
-    .product-card .card-bottom-gradient {
-      position: absolute; inset-x: 0; bottom: 0;
-      height: 50%;
-      background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
-    }
-    .product-card .card-content {
-      position: relative; z-index: 10;
-      height: 100%; display: flex;
-      flex-direction: column; justify-content: flex-end;
-      padding: 20px;
-      transition: transform 0.5s ease-out;
-    }
-    .product-card:hover .card-content {
-      transform: translateY(-4px) translateX(2px);
-    }
-    .card-label {
-      font-size: 10px; font-weight: 500;
-      color: rgba(255,255,255,0.4);
-      text-transform: uppercase; letter-spacing: 0.1em;
-      margin-bottom: 4px;
-    }
-    .card-name {
-      font-family: var(--font-title); font-size: 18px;
-      font-weight: 700; color: white;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
-      margin-bottom: 4px;
-    }
-    .card-desc {
-      font-size: 11px; color: rgba(255,255,255,0.3);
-      margin-bottom: 12px; line-height: 1.6;
-    }
-    .card-price {
-      font-size: 22px; font-weight: 700;
-    }
-
-    /* ═══ How It Works ═════════════════════════════════════════ */
-    .section-how {
-      position: relative; overflow: hidden;
-      padding: 96px 24px 160px;
-    }
-    .how-inner { max-width: 1100px; margin: 0 auto; }
-    .how-title {
-      text-align: center; margin-bottom: 80px;
-    }
-    .how-title h2 {
-      font-family: var(--font-title);
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 800; color: white;
-      line-height: 0.94; letter-spacing: -0.05em;
-      max-width: 20ch; margin: 0 auto;
-    }
-    .how-title p {
-      margin-top: 28px;
-      font-size: clamp(14px, 2vw, 17px);
-      color: rgba(255,255,255,0.4);
-      max-width: 500px; margin-left: auto; margin-right: auto;
-      line-height: 1.7;
-    }
-    .how-steps {
-      display: flex; align-items: flex-start;
-      gap: 0; justify-content: center;
-    }
-    .how-step {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      max-width: 280px;
-    }
-    .how-step svg {
-      width: 26px; height: 26px;
-      color: rgba(255,255,255,0.7);
-      transition: color 0.3s;
-    }
-    .how-step:hover svg { color: rgba(99,130,255,0.8); }
-    .how-step h3 {
-      margin-top: 24px;
-      font-family: var(--font-title); font-size: 1.1rem;
-      font-weight: 600; color: white;
-    }
-    .how-step p {
-      margin-top: 10px;
-      font-size: 13.5px; color: rgba(255,255,255,0.35);
-      line-height: 1.6; max-width: 17rem;
-    }
-    .how-connector {
-      width: 80px; height: 1px; flex-shrink: 0;
-      margin-top: 13px;
-      background: linear-gradient(to right, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
-    }
-
-    /* ═══ Footer ═══════════════════════════════════════════════ */
-    footer {
-      position: relative;
-    }
-    footer::before {
-      display: none;
-    }
-    footer::after {
-      display: none;
-    }
-    .footer-cta {
-      max-width: 1100px; margin: 0 auto;
-      padding: 120px 24px;
-      display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-    }
-    .footer-cta h2 {
-      font-family: var(--font-title);
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 800; color: white;
-      line-height: 1.1;
-      text-shadow: 0 2px 16px rgba(0,0,0,0.3);
-    }
-    .footer-cta p {
-      margin-top: 12px;
-      font-size: 14px; color: rgba(255,255,255,0.3);
-      max-width: 400px;
-    }
-    .footer-cta-btns {
-      display: flex; align-items: center; gap: 12px;
-      margin-top: 32px;
-    }
-    .footer-cta-btns .btn-primary { border-radius: 16px; }
-    .footer-social-btn {
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: rgba(255,255,255,0.2);
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    .footer-social-btn:hover {
-      color: rgba(255,255,255,0.5);
-      background: rgba(255,255,255,0.06);
-    }
-    .footer-social-btn svg { width: 16px; height: 16px; }
-
-    .footer-links {
-      max-width: 1100px; margin: 0 auto;
-      padding: 64px 24px 40px;
-    }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 32px; margin-bottom: 48px; justify-items: start;
-    }
-    .footer-brand-col .footer-logo {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 16px;
-    }
-    .footer-brand-col .footer-logo svg { width: 18px; height: 15px; }
-    .footer-brand-col .footer-logo span {
-      font-family: var(--font-title); font-size: 14px;
-      font-weight: 700; color: rgba(255,255,255,0.8);
-      letter-spacing: -0.02em;
-    }
-    .footer-brand-col p {
-      font-size: 11px; color: rgba(255,255,255,0.2);
-      line-height: 1.6; max-width: 180px;
-      margin-bottom: 20px;
-    }
-    .footer-social-links { display: flex; gap: 8px; }
-    .footer-social-links a {
-      width: 32px; height: 32px; border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.06);
-      display: flex; align-items: center; justify-content: center;
-      color: rgba(255,255,255,0.2); text-decoration: none;
-      transition: all 0.2s;
-    }
-    .footer-social-links a:hover {
-      color: rgba(255,255,255,0.5);
-      border-color: rgba(255,255,255,0.12);
-    }
-    .footer-social-links a svg { width: 14px; height: 14px; }
-    .footer-col h4 {
-      font-size: 10px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.12em;
-      color: rgba(255,255,255,0.3); margin-bottom: 14px;
-    }
-    .footer-col a {
-      display: block; font-size: 12px;
-      color: rgba(255,255,255,0.2); text-decoration: none;
-      padding: 4px 0; transition: color 0.2s;
-    }
-    .footer-col a:hover { color: rgba(255,255,255,0.5); }
-    .footer-bottom {
-      display: flex; justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid rgba(255,255,255,0.04);
-      padding-top: 24px;
-    }
-    .footer-bottom span {
-      font-size: 11px; color: rgba(255,255,255,0.25);
-    }
-
-    /* ═══ Responsive ═══════════════════════════════════════════ */
-    @media (max-width: 768px) {
-      .nav-links, .nav-lang { display: none; }
-      .navbar { padding: 6px 8px 6px 16px; }
-      .products-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-      .how-steps { flex-direction: column; align-items: center; gap: 40px; }
-      .how-connector { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(255,255,255,0.14), rgba(255,255,255,0.03)); margin-top: 0; }
-      .footer-grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto 48px; }
-      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
-    }
-  </style>
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes breathe { 50% { opacity: .6; transform: scale(.94); } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes pop { from { opacity: 0; transform: scale(.94); } }
+@media (max-width: 600px) { header .who { display: none; } .card { padding: 18px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+</style>
 </head>
 <body>
 
-<!-- ═══ Background Glow ═════════════════════════════════════ -->
-<div class="bg-glow-fixed"></div>
-
-<!-- ═══ Navbar ═══════════════════════════════════════════════ -->
-<nav class="navbar">
-  <a href="#" class="nav-logo">
-    <svg fill="none" viewBox="0 0 40 34" width="24" height="20">
-      <defs>
-        <radialGradient id="nlg" cx="0" cy="0" gradientTransform="translate(20 17) scale(20 16)" gradientUnits="userSpaceOnUse" r="1">
-          <stop stop-color="#8FA5FF"></stop>
-          <stop offset="1" stop-color="#4A5FD9"></stop>
-        </radialGradient>
-      </defs>
-      <path d="M4 6L10 2H16L8 6H4Z" fill="url(#nlg)"/>
-      <path d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" fill="url(#nlg)" fill-rule="evenodd"/>
-      <path d="M24 10L30 2H36L30 10H24Z" fill="url(#nlg)"/>
-      <path d="M26 12L34 18L30 24L22 18L26 12Z" fill="url(#nlg)"/>
-      <path d="M20 22L26 30H18L20 22Z" fill="url(#nlg)"/>
-    </svg>
-    <span class="nav-logo-text">jartix</span>
-  </a>
-  <div class="nav-links">
-    <a href="#products">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-      <span data-en="Pricing">Тарифы</span>
-    </a>
-    <a href="#how">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
-      <span data-en="Documentation">Документация</span>
-    </a>
-    <a href="https://t.me/kuzmanx" target="_blank" rel="noopener noreferrer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
-      <span data-en="Support">Поддержка</span>
-    </a>
-  </div>
-  <div class="nav-lang">
-    <button class="active" data-lang="ru">RU</button>
-    <button data-lang="en">EN</button>
-  </div>
-  <a href="auth.html" class="nav-cabinet">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    <span data-en="Account">Кабинет</span>
-  </a>
-</nav>
-
-<div class="lang-fade" id="langContent">
-<section class="hero">
-  <div class="hero-bg hero-bg-ken">
-    <img src="img/hero.jpg" alt="" loading="eager">
-  </div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <div class="hero-logo">
-      <svg fill="none" viewBox="0 0 40 34" width="64" height="54">
-        <defs>
-          <radialGradient id="hlg" cx="0" cy="0" gradientTransform="translate(20 17) scale(20 16)" gradientUnits="userSpaceOnUse" r="1">
-            <stop stop-color="#8FA5FF"></stop>
-            <stop offset="1" stop-color="#4A5FD9"></stop>
-          </radialGradient>
-        </defs>
-        <g class="logo-anim">
-          <path class="logo-stroke" d="M4 6L10 2H16L8 6H4Z" stroke="url(#hlg)" stroke-linejoin="round" stroke-width="0.8" pathLength="100"/>
-          <path class="logo-stroke" d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" stroke="url(#hlg)" stroke-linejoin="round" stroke-width="0.8" pathLength="100"/>
-          <path class="logo-stroke" d="M24 10L30 2H36L30 10H24Z" stroke="url(#hlg)" stroke-linejoin="round" stroke-width="0.8" pathLength="100"/>
-          <path class="logo-stroke" d="M26 12L34 18L30 24L22 18L26 12Z" stroke="url(#hlg)" stroke-linejoin="round" stroke-width="0.8" pathLength="100"/>
-          <path class="logo-stroke" d="M20 22L26 30H18L20 22Z" stroke="url(#hlg)" stroke-linejoin="round" stroke-width="0.8" pathLength="100"/>
-          <path class="logo-fill" d="M4 6L10 2H16L8 6H4Z" fill="url(#hlg)"/>
-          <path class="logo-fill" d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" fill="url(#hlg)" fill-rule="evenodd"/>
-          <path class="logo-fill" d="M24 10L30 2H36L30 10H24Z" fill="url(#hlg)"/>
-          <path class="logo-fill" d="M26 12L34 18L30 24L22 18L26 12Z" fill="url(#hlg)"/>
-          <path class="logo-fill" d="M20 22L26 30H18L20 22Z" fill="url(#hlg)"/>
-        </g>
-      </svg>
-    </div>
-    <h1>
-      <span class="gradient-text" data-en="Know more.">Знай больше.</span><br>
-      <span data-en="Win with ">Побеждай с </span><span class="gradient-text">jartix.</span>
-    </h1>
-    <p class="hero-sub" data-en="Elevate your gaming to the next level. Control, speed and precision — it's all inside.">Поднимите свой игровой процесс на новый уровень. Контроль, скорость и точность — всё уже внутри.</p>
-    <div class="hero-btns">
-      <a href="auth.html" class="btn btn-primary btn-shimmer" data-en="Create account">
-        Создать аккаунт
-      </a>
-      <a href="#how" class="btn btn-glass" data-en="Documentation">
-        Документация
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ Products ═════════════════════════════════════════════ -->
-<section class="section-products" id="products">
-  <div class="bg-img">
-    <img src="img/tarifs.png" alt="" loading="lazy">
-    <div style="position:absolute;inset:0;background:linear-gradient(rgba(10,12,18,0.68) 0%,rgba(10,12,18,0.74) 28%,rgba(10,12,18,0.9) 100%)"></div>
-    <div class="bg-radial"></div>
-  </div>
-  <div class="bg-gradient-top"></div>
-  <div class="bg-gradient-bottom"></div>
-  <div class="products-inner">
-    <div class="section-title">
-      <h2 data-en="Pricing">Тарифы</h2>
-      <p data-en="Choose a plan and get instant access to all features, updates and support.">Выберите план и получите мгновенный доступ ко всем функциям, обновлениям и поддержке.</p>
-    </div>
-    <div class="products-grid">
-      <!-- Card 1 -->
-      <div class="product-card card-blue">
-        <div class="card-center-logo" style="color:rgb(110,138,255)">
-          <svg fill="none" viewBox="0 0 40 34"><path d="M4 6L10 2H16L8 6H4Z" fill="currentColor"/><path d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" fill="currentColor" fill-rule="evenodd"/><path d="M24 10L30 2H36L30 10H24Z" fill="currentColor"/><path d="M26 12L34 18L30 24L22 18L26 12Z" fill="currentColor"/><path d="M20 22L26 30H18L20 22Z" fill="currentColor"/></svg>
-        </div>
-        <div class="card-bottom-gradient"></div>
-        <div class="card-content">
-          <p class="card-label" data-en="BASE PLAN">ТАРИФ БАЗОВЫЙ</p>
-          <p class="card-name">Jartix Standard</p>
-          <p class="card-desc" data-en="Client forever, all future updates included.">Клиент навсегда, все последующие обновления включены.</p>
-          <p class="card-price" style="color:rgb(110,138,255)">299 ₽</p>
-        </div>
-      </div>
-      <!-- Card 3 -->
-      <div class="product-card card-green">
-        <div class="card-center-logo" style="color:rgb(102,221,170)">
-          <svg fill="none" viewBox="0 0 40 34"><path d="M4 6L10 2H16L8 6H4Z" fill="currentColor"/><path d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" fill="currentColor" fill-rule="evenodd"/><path d="M24 10L30 2H36L30 10H24Z" fill="currentColor"/><path d="M26 12L34 18L30 24L22 18L26 12Z" fill="currentColor"/><path d="M20 22L26 30H18L20 22Z" fill="currentColor"/></svg>
-        </div>
-        <div class="card-bottom-gradient"></div>
-        <div class="card-content">
-          <p class="card-label" data-en="ONE-TIME SERVICE">РАЗОВАЯ УСЛУГА</p>
-          <p class="card-name">HWID Reset</p>
-          <p class="card-desc" data-en="Reset your account's hardware binding (HWID).">Сброс привязки (HWID) на вашем аккаунте к железу.</p>
-          <p class="card-price" style="color:rgb(102,221,170)">200 ₽</p>
-        </div>
-      </div>
-    </div>
-    <p style="text-align:center;font-size:12px;color:rgba(255,255,255,0.2);margin-top:80px" data-en="All plans include unlimited access, automatic updates and priority support.">
-      Все планы включают неограниченный доступ, автоматические обновления и приоритетную поддержку.
-    </p>
-  </div>
-</section>
-
-<!-- ═══ How It Works ═════════════════════════════════════════ -->
-<section class="section-how" id="how">
-  <div class="how-inner">
-    <div class="how-title">
-      <h2 data-en="Up and running in minutes">Запуск за<br>несколько минут</h2>
-      <p data-en="From registration to your first game — no complicated setup needed. Download the launcher, log in and play.">От регистрации до первой игры — без сложной настройки. Скачали лаунчер, вошли в аккаунт и играете.</p>
-    </div>
-    <div class="how-steps">
-      <div class="how-step">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
-        <h3 data-en="Create an account">Создайте аккаунт</h3>
-        <p data-en="Quick registration in under a minute. One account — access to all products and features.">Быстрая регистрация за минуту. Один аккаунт — доступ ко всем продуктам и функционалу.</p>
-      </div>
-      <div class="how-connector"></div>
-      <div class="how-step">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
-        <h3 data-en="Download the client">Скачайте клиент</h3>
-        <p data-en="Download the launcher from your account page. It automatically pulls the latest version.">Загрузите лаунчер через личный кабинет на сайте. Автоматически подтянет последнюю версию.</p>
-      </div>
-      <div class="how-connector"></div>
-      <div class="how-step">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg>
-        <h3 data-en="Play and win">Играйте и побеждайте</h3>
-        <p data-en="Pick a server and launch. Control, speed and precision — from the very first second.">Выберите сервер и запускайте. Контроль, скорость и точность — с первой секунды.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ Footer ═══════════════════════════════════════════════ -->
-<footer>
-  <div class="footer-cta">
-    <h2><span data-en="Start winning ">Начни побеждать </span><span class="gradient-text" data-en="today">сегодня</span></h2>
-    <p data-en="Join thousands of players who already chose jartix.">Присоединяйся к тысячам игроков, которые уже выбрали jartix.</p>
-    <div class="footer-cta-btns">
-      <a href="auth.html" class="btn btn-primary btn-shimmer" data-en="Create account">
-        Создать аккаунт
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </a>
-    </div>
-  </div>
-  <div class="footer-links">
-    <div class="footer-grid">
-      <div class="footer-brand-col">
-        <div class="footer-logo">
-          <svg fill="none" viewBox="0 0 40 34" width="21" height="18">
-            <defs>
-              <radialGradient id="flg" cx="0" cy="0" gradientTransform="translate(20 17) scale(20 16)" gradientUnits="userSpaceOnUse" r="1">
-                <stop stop-color="#8FA5FF"></stop>
-                <stop offset="1" stop-color="#4A5FD9"></stop>
-              </radialGradient>
-            </defs>
-            <path d="M4 6L10 2H16L8 6H4Z" fill="url(#flg)"/>
-            <path d="M0 10L14 2L22 10L18 14H10L14 30H8L0 10Z" fill="url(#flg)" fill-rule="evenodd"/>
-            <path d="M24 10L30 2H36L30 10H24Z" fill="url(#flg)"/>
-            <path d="M26 12L34 18L30 24L22 18L26 12Z" fill="url(#flg)"/>
-            <path d="M20 22L26 30H18L20 22Z" fill="url(#flg)"/>
-          </svg>
-          <span>jartix</span>
-        </div>
-        <p data-en="The client that makes you unstoppable.">Клиент, который делает тебя непобедимым.</p>
-        <div class="footer-social-links">
-          <a href="https://t.me/kuzmanx" target="_blank" rel="noopener noreferrer"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4 data-en="Platform">Платформа</h4>
-        <a href="auth.html" data-en="Create account">Создать аккаунт</a>
-        <a href="auth.html" data-en="Sign in">Войти в аккаунт</a>
-        <a href="auth.html" data-en="Account">Кабинет</a>
-      </div>
-      <div class="footer-col">
-        <h4 data-en="Navigation">Навигация</h4>
-        <a href="#products" data-en="Pricing">Тарифы</a>
-        <a href="#how" data-en="How it works">Как работает</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span data-en="&copy; 2026 jartix. All rights reserved.">&copy; 2026 jartix. Все права защищены.</span>
-      <span>jartix.xyz</span>
-    </div>
-  </div>
-</footer>
+<!-- ============ LOGIN ============ -->
+<div id="login">
+  <form class="login-card glass" id="loginForm">
+    <div class="orb"><i class="r2"></i><i class="r1"></i><i class="c"></i></div>
+    <div class="brand">S.I.R.I.U.S</div>
+    <div class="sub">Панель управления голосовым ассистентом</div>
+    <div class="field"><label>Почта</label><input class="input" id="email" type="email" autocomplete="username" required></div>
+    <div class="field"><label>Пароль</label><input class="input" id="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary wide" type="submit">Войти</button>
+    <div class="error" id="loginError"></div>
+  </form>
 </div>
 
+<!-- ============ APP ============ -->
+<div id="app">
+  <header>
+    <div class="logo"><span class="dot"></span><b>S.I.R.I.U.S</b></div>
+    <div class="spacer"></div>
+    <span class="who" id="who"></span>
+    <button class="btn" id="logout">Выйти</button>
+  </header>
+  <nav id="tabs">
+    <button data-tab="overview" class="active">Обзор</button>
+    <button data-tab="core">Ядро</button>
+    <button data-tab="voice">Голос</button>
+    <button data-tab="persona">Личность</button>
+    <button data-tab="family">Семья</button>
+    <button data-tab="devices">Устройства</button>
+    <button data-tab="logs">Журнал</button>
+  </nav>
+  <main>
+    <!-- Overview -->
+    <section id="overview" class="active">
+      <div class="stats">
+        <div class="stat glass"><div class="k">Колонок</div><div class="v" id="stDevices">—</div></div>
+        <div class="stat glass"><div class="k">Запросов сегодня</div><div class="v" id="stToday">—</div></div>
+        <div class="stat glass"><div class="k">Средний ответ</div><div class="v" id="stMs">—</div></div>
+        <div class="stat glass"><div class="k">Нейросеть</div><div class="v" id="stModel" style="font-size:16px;overflow-wrap:anywhere">—</div></div>
+      </div>
+      <div class="card glass">
+        <h2>Последние разговоры</h2>
+        <div class="hint">Что слышали колонки и что ответил Сириус.</div>
+        <div class="list" id="recentLogs"></div>
+      </div>
+    </section>
+
+    <!-- Core -->
+    <section id="core">
+      <div class="card glass">
+        <h2>Нейросеть</h2>
+        <div class="hint">Любая модель OpenRouter. Быстрые и дешёвые: <code>deepseek/deepseek-v4.1-flash</code>, <code>anthropic/claude-haiku-5.5</code>; умнее: <code>anthropic/claude-sonnet-5.5</code>.</div>
+        <div class="grid">
+          <div class="field"><label>Модель</label><input class="input" id="model" list="models"></div>
+          <div class="field"><label>Макс. длина ответа (токены)</label><input class="input" id="max_tokens" type="number" min="100" max="4000"></div>
+        </div>
+        <div class="field"><label>Креативность</label>
+          <div class="range"><input type="range" id="temperature" min="0" max="1.5" step="0.05"><output id="temperatureOut"></output></div>
+        </div>
+        <datalist id="models">
+          <option value="deepseek/deepseek-v4.1-flash"><option value="anthropic/claude-haiku-5.5">
+          <option value="anthropic/claude-sonnet-5.5"><option value="google/gemini-3.5-flash-lite"><option value="qwen/qwen3.8-flash">
+        </datalist>
+        <div class="actions"><button class="btn primary" data-save="core">Сохранить</button></div>
+      </div>
+      <div class="card glass">
+        <h2>Ключ OpenRouter</h2>
+        <div class="hint">Хранится только на сервере. Панель может его заменить, но никогда не показывает.</div>
+        <div class="secret-state" id="keyState">—</div>
+        <div class="row" style="margin-top:12px">
+          <input class="input" id="openrouterKey" type="password" placeholder="sk-or-v1-…" style="flex:1;min-width:220px" autocomplete="off">
+          <button class="btn primary" id="saveKey">Заменить ключ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Voice -->
+    <section id="voice">
+      <div class="card glass">
+        <h2>Голос</h2>
+        <div class="hint">Нейроголоса Microsoft. Изменения применяются ко всем колонкам сразу.</div>
+        <div class="field"><label>Голос</label>
+          <select class="input" id="voiceName">
+            <option value="ru-RU-DmitryNeural">Дмитрий · мужской</option>
+            <option value="ru-RU-SvetlanaNeural">Светлана · женский</option>
+            <option value="ru-RU-DariyaNeural">Дария · женский</option>
+          </select>
+        </div>
+        <div class="grid">
+          <div class="field"><label>Скорость речи</label>
+            <div class="range"><input type="range" id="voice_rate" min="-30" max="40" step="1"><output id="voice_rateOut"></output></div></div>
+          <div class="field"><label>Высота голоса</label>
+            <div class="range"><input type="range" id="voice_pitch" min="-20" max="20" step="1"><output id="voice_pitchOut"></output></div></div>
+        </div>
+        <div class="field"><label>Текст для прослушивания</label><input class="input" id="previewText" value="Привет! Я Сириус. Чем займёмся?"></div>
+        <div class="actions">
+          <button class="btn" id="previewBtn">▶ Прослушать</button>
+          <button class="btn primary" data-save="voice">Сохранить</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Persona -->
+    <section id="persona">
+      <div class="card glass">
+        <h2>Личность</h2>
+        <div class="hint">Как Сириус себя ведёт и на какое имя откликается.</div>
+        <div class="grid">
+          <div class="field"><label>Имя ассистента</label><input class="input" id="assistant_name"></div>
+          <div class="field"><label>Слова-активаторы (через запятую)</label><input class="input" id="wake_words"></div>
+          <div class="field"><label>Окно разговора без активатора, сек</label><input class="input" id="follow_up_seconds" type="number" min="0" max="300"></div>
+          <div class="field"><label>Сколько реплик помнить</label><input class="input" id="history_turns" type="number" min="0" max="30"></div>
+        </div>
+        <div class="field"><label>Характер и правила (системный промпт)</label><textarea class="input" id="system_prompt" rows="9"></textarea></div>
+        <div class="actions"><button class="btn primary" data-save="persona">Сохранить</button></div>
+      </div>
+    </section>
+
+    <!-- Family -->
+    <section id="family">
+      <div class="card glass">
+        <h2>Семья</h2>
+        <div class="hint">Кто живёт в доме. Сириус учитывает это в разговоре: имена, привычки, возраст детей.</div>
+        <div class="row">
+          <input class="input" id="famName" placeholder="Имя" style="flex:1;min-width:140px">
+          <input class="input" id="famNote" placeholder="Заметка: например «папа, любит рок»" style="flex:2;min-width:200px">
+          <button class="btn primary" id="famAdd">Добавить</button>
+        </div>
+        <div class="list" id="famList" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <!-- Devices -->
+    <section id="devices">
+      <div class="card glass">
+        <h2>Колонки</h2>
+        <div class="hint">У каждой колонки свой токен. Его вводят один раз на странице настройки «SIRIUS-Setup». Отозванный токен перестаёт работать сразу.</div>
+        <div class="row">
+          <input class="input" id="devName" placeholder="Название, например «Кухня»" style="flex:1;min-width:200px">
+          <button class="btn primary" id="devAdd">Добавить колонку</button>
+        </div>
+        <div class="list" id="devList" style="margin-top:16px"></div>
+      </div>
+      <div class="card glass">
+        <h2>Адрес сервера для колонок</h2>
+        <div class="token" id="serverUrl"></div>
+      </div>
+    </section>
+
+    <!-- Logs -->
+    <section id="logs">
+      <div class="card glass">
+        <div class="row" style="justify-content:space-between">
+          <div><h2>Журнал</h2><div class="hint" style="margin:0">Последние 100 запросов.</div></div>
+          <div class="row"><button class="btn" id="logsReload">Обновить</button><button class="btn danger" id="logsClear">Очистить</button></div>
+        </div>
+        <div class="list" id="logList" style="margin-top:16px"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="glass"></div>
+<div id="modal"><div class="box glass" id="modalBox"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-(function() {
-  let currentLang = 'ru';
-  const content = document.getElementById('langContent');
-  const btns = document.querySelectorAll('.nav-lang button');
+const SUPABASE_URL = 'https://giuyzpwcefzqtcmezuyq.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpdXl6cHdjZWZ6cXRjbWV6dXlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NDU0NDksImV4cCI6MjEwOTAyMTQ0OX0.Oo_uxbwBUicWGH7wyP_0rzWNX906O1P4utMqW5i9o8A';
+const SERVER = location.origin + '/v1';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const $ = (id) => document.getElementById(id);
+let settings = null;
 
-  function switchLang(lang) {
-    if (lang === currentLang) return;
-    currentLang = lang;
+function toast(text, bad = false) {
+  const t = $('toast');
+  t.textContent = text;
+  t.style.borderColor = bad ? 'rgba(255,95,122,.5)' : 'rgba(40,220,255,.4)';
+  t.classList.add('show');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function modal(html) { $('modalBox').innerHTML = html; $('modal').classList.add('show'); }
+function closeModal() { $('modal').classList.remove('show'); }
+$('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const ago = (iso) => {
+  if (!iso) return 'никогда';
+  const s = (Date.now() - new Date(iso)) / 1000;
+  if (s < 90) return 'только что';
+  if (s < 3600) return `${Math.round(s / 60)} мин назад`;
+  if (s < 86400) return `${Math.round(s / 3600)} ч назад`;
+  return new Date(iso).toLocaleString('ru-RU');
+};
 
-    btns.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+// ---------- auth ----------
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('loginError').textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email: $('email').value, password: $('password').value });
+  if (error) $('loginError').textContent = 'Неверная почта или пароль';
+  else start();
+});
+$('logout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
-    content.classList.add('fading');
-    setTimeout(() => {
-      document.querySelectorAll('[data-en]').forEach(el => {
-        if (lang === 'en') {
-          if (!el.dataset.ru) el.dataset.ru = el.innerHTML;
-          el.innerHTML = el.dataset.en;
-        } else {
-          if (el.dataset.ru) el.innerHTML = el.dataset.ru;
-        }
-      });
-      content.classList.remove('fading');
-    }, 350);
+async function start() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  const { data: isAdmin } = await sb.rpc('is_admin');
+  if (!isAdmin) {
+    $('loginError').textContent = 'У этого аккаунта нет прав администратора';
+    await sb.auth.signOut();
+    return;
   }
+  $('login').style.display = 'none';
+  $('app').style.display = 'block';
+  $('who').textContent = session.user.email;
+  $('serverUrl').textContent = SERVER;
+  await loadSettings();
+  loadOverview();
+}
 
-  btns.forEach(b => b.addEventListener('click', () => switchLang(b.dataset.lang)));
-})();
+// ---------- tabs ----------
+$('tabs').addEventListener('click', (e) => {
+  const tab = e.target.dataset.tab;
+  if (!tab) return;
+  document.querySelectorAll('nav button').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('section').forEach((s) => s.classList.toggle('active', s.id === tab));
+  ({ overview: loadOverview, family: loadFamily, devices: loadDevices, logs: loadLogs, core: loadKeyState })[tab]?.();
+});
+
+// ---------- settings ----------
+function bindRange(id, fmt) {
+  const update = () => ($(id + 'Out').textContent = fmt($(id).value));
+  $(id).addEventListener('input', update);
+  update();
+}
+async function loadSettings() {
+  const { data, error } = await sb.from('settings').select('*').eq('id', 1).single();
+  if (error) return toast('Не удалось загрузить настройки: ' + error.message, true);
+  settings = data;
+  for (const k of ['model', 'max_tokens', 'temperature', 'voice_rate', 'voice_pitch', 'assistant_name', 'follow_up_seconds', 'history_turns', 'system_prompt']) $(k).value = data[k];
+  $('voiceName').value = data.voice;
+  $('wake_words').value = data.wake_words.join(', ');
+  bindRange('temperature', (v) => Number(v).toFixed(2));
+  bindRange('voice_rate', (v) => (v > 0 ? '+' : '') + v + '%');
+  bindRange('voice_pitch', (v) => (v > 0 ? '+' : '') + v + ' Гц');
+}
+const groups = {
+  core: () => ({ model: $('model').value.trim(), max_tokens: +$('max_tokens').value, temperature: +$('temperature').value }),
+  voice: () => ({ voice: $('voiceName').value, voice_rate: +$('voice_rate').value, voice_pitch: +$('voice_pitch').value }),
+  persona: () => ({
+    assistant_name: $('assistant_name').value.trim(),
+    wake_words: $('wake_words').value.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
+    follow_up_seconds: +$('follow_up_seconds').value,
+    history_turns: +$('history_turns').value,
+    system_prompt: $('system_prompt').value.trim(),
+  }),
+};
+document.querySelectorAll('[data-save]').forEach((b) => b.addEventListener('click', async () => {
+  const patch = { ...groups[b.dataset.save](), updated_at: new Date().toISOString() };
+  const { error } = await sb.from('settings').update(patch).eq('id', 1);
+  error ? toast('Ошибка: ' + error.message, true) : toast('Сохранено — колонки уже используют новые настройки');
+}));
+
+// ---------- OpenRouter key ----------
+async function loadKeyState() {
+  const { data } = await sb.rpc('secret_status');
+  const row = (data || []).find((r) => r.name === 'openrouter_key');
+  $('keyState').innerHTML = row ? `Ключ задан <b>✓</b> · обновлён ${esc(ago(row.updated_at))}` : 'Ключ ещё не задан — колонки не смогут думать.';
+}
+$('saveKey').onclick = async () => {
+  const key = $('openrouterKey').value.trim();
+  if (!key.startsWith('sk-or-')) return toast('Это не похоже на ключ OpenRouter', true);
+  const { error } = await sb.rpc('set_secret', { p_name: 'openrouter_key', p_value: key });
+  $('openrouterKey').value = '';
+  error ? toast('Ошибка: ' + error.message, true) : (toast('Ключ заменён'), loadKeyState());
+};
+
+// ---------- voice preview ----------
+$('previewBtn').onclick = async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  $('previewBtn').disabled = true;
+  try {
+    const r = await fetch(SERVER + '/preview', {
+      method: 'POST',
+      headers: { authorization: 'Bearer ' + session.access_token, 'content-type': 'application/json' },
+      body: JSON.stringify({ text: $('previewText').value, voice: $('voiceName').value, voice_rate: +$('voice_rate').value, voice_pitch: +$('voice_pitch').value }),
+    });
+    if (!r.ok) throw new Error((await r.json()).error || r.status);
+    const pcm = new Int16Array(await r.arrayBuffer());
+    if (!pcm.length) throw new Error('пустой ответ синтеза');
+    const ctx = new AudioContext({ sampleRate: 16000 });
+    const buf = ctx.createBuffer(1, pcm.length, 16000);
+    const ch = buf.getChannelData(0);
+    for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start();
+  } catch (e) {
+    toast('Не удалось озвучить: ' + e.message, true);
+  } finally {
+    $('previewBtn').disabled = false;
+  }
+};
+
+// ---------- family ----------
+async function loadFamily() {
+  const { data } = await sb.from('family').select('*').order('created_at');
+  $('famList').innerHTML = (data || []).length ? data.map((f) => `
+    <div class="item"><div class="main"><div class="title">${esc(f.name)}</div><div class="meta">${esc(f.note) || '—'}</div></div>
+    <button class="btn danger" onclick="delFamily('${f.id}')">Удалить</button></div>`).join('') : '<div class="empty">Пока никого. Добавьте членов семьи — Сириус будет знать, к кому обращается.</div>';
+}
+$('famAdd').onclick = async () => {
+  const name = $('famName').value.trim();
+  if (!name) return;
+  const { error } = await sb.from('family').insert({ name, note: $('famNote').value.trim() });
+  if (error) return toast(error.message, true);
+  $('famName').value = $('famNote').value = '';
+  loadFamily();
+};
+window.delFamily = async (id) => { await sb.from('family').delete().eq('id', id); loadFamily(); };
+
+// ---------- devices ----------
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function loadDevices() {
+  const { data } = await sb.from('devices').select('id,name,token_hint,revoked,volume,last_seen,created_at').order('created_at');
+  $('devList').innerHTML = (data || []).length ? data.map((d) => `
+    <div class="item"><div class="main">
+      <div class="title">${esc(d.name)} <span class="badge ${d.revoked ? 'off' : 'on'}">${d.revoked ? 'отозвана' : 'активна'}</span></div>
+      <div class="meta">Токен …${esc(d.token_hint)} · громкость ${d.volume}% · на связи: ${esc(ago(d.last_seen))}</div></div>
+      ${d.revoked ? `<button class="btn danger" onclick="delDevice('${d.id}')">Удалить</button>` : `<button class="btn danger" onclick="revokeDevice('${d.id}')">Отозвать</button>`}
+    </div>`).join('') : '<div class="empty">Колонок пока нет.</div>';
+}
+$('devAdd').onclick = async () => {
+  const name = $('devName').value.trim() || 'Колонка';
+  const bytes = crypto.getRandomValues(new Uint8Array(24));
+  const token = 'sk-dev-' + [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
+  const { error } = await sb.from('devices').insert({ name, token_hash: await sha256Hex(token), token_hint: token.slice(-6) });
+  if (error) return toast(error.message, true);
+  $('devName').value = '';
+  loadDevices();
+  modal(`<h2>Колонка «${esc(name)}» добавлена</h2>
+    <div class="hint" style="color:var(--muted);margin-top:8px">Скопируйте токен и введите его на странице настройки колонки. <b>Он показывается один раз.</b></div>
+    <div class="token">${token}</div>
+    <div class="actions"><button class="btn" onclick="navigator.clipboard.writeText('${token}').then(()=>toast('Скопировано'))">Копировать</button>
+    <button class="btn primary" onclick="closeModal()">Готово</button></div>`);
+};
+window.revokeDevice = async (id) => { await sb.from('devices').update({ revoked: true }).eq('id', id); toast('Токен отозван'); loadDevices(); };
+window.delDevice = async (id) => { await sb.from('devices').delete().eq('id', id); loadDevices(); };
+
+// ---------- logs & overview ----------
+function renderLogs(rows) {
+  return rows.length ? rows.map((l) => `
+    <div class="log ${l.error ? 'err' : ''}">
+      <div class="q">«${esc(l.heard)}»</div>
+      <div class="a">${esc(l.reply)}${l.error ? `<br><span style="color:var(--danger)">${esc(l.error)}</span>` : ''}</div>
+      <div class="t">${new Date(l.created_at).toLocaleString('ru-RU')} · ${l.ms ?? '—'} мс</div>
+    </div>`).join('') : '<div class="empty">Пока пусто. Скажите колонке «Сириус, привет!»</div>';
+}
+async function loadLogs() {
+  const { data } = await sb.from('logs').select('*').order('created_at', { ascending: false }).limit(100);
+  $('logList').innerHTML = renderLogs(data || []);
+}
+$('logsReload').onclick = loadLogs;
+$('logsClear').onclick = async () => { await sb.from('logs').delete().gt('id', 0); loadLogs(); toast('Журнал очищен'); };
+async function loadOverview() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const [devs, logs, recent] = await Promise.all([
+    sb.from('devices').select('id', { count: 'exact', head: true }).eq('revoked', false),
+    sb.from('logs').select('ms').gte('created_at', today.toISOString()),
+    sb.from('logs').select('*').order('created_at', { ascending: false }).limit(6),
+  ]);
+  $('stDevices').textContent = devs.count ?? 0;
+  const rows = logs.data || [];
+  $('stToday').textContent = rows.length;
+  const ms = rows.filter((r) => r.ms).map((r) => r.ms);
+  $('stMs').textContent = ms.length ? (ms.reduce((a, b) => a + b, 0) / ms.length / 1000).toFixed(1) + ' с' : '—';
+  $('stModel').textContent = settings?.model || '—';
+  $('recentLogs').innerHTML = renderLogs(recent.data || []);
+}
+
+start();
 </script>
-
 </body>
 </html>
