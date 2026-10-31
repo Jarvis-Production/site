@@ -459,7 +459,7 @@ async function loadKeyState() {
 }
 $('saveGemini').onclick = async () => {
   const key = $('geminiKey').value.trim();
-  if (!key.startsWith('AIza')) return toast('Ключ Gemini начинается с AIza', true);
+  if (key.length < 20) return toast('Ключ слишком короткий — скопируйте его целиком', true);
   const { error } = await sb.rpc('set_secret', { p_name: 'gemini_key', p_value: key });
   $('geminiKey').value = '';
   error ? toast('Ошибка: ' + error.message, true) : (toast('Ключ Gemini сохранён'), loadKeyState());
