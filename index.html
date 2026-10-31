@@ -249,9 +249,23 @@ section.active { display: block; }
     <section id="voice">
       <div class="card glass">
         <h2>Голос</h2>
-        <div class="hint">Мультиязычные нейроголоса Microsoft: бесплатно, без ключей и лимитов, говорят по-русски. Если Microsoft недоступен, колонка временно говорит голосом Piper. Изменения применяются ко всем колонкам сразу.</div>
+        <div class="hint">Голоса Яндекса (движок Алисы) — самые естественные и быстрые; нужен ключ Yandex SpeechKit ниже. Голоса Microsoft бесплатные, но медленнее. Если сервис недоступен, колонка временно говорит голосом Piper. Изменения применяются ко всем колонкам сразу.</div>
         <div class="field"><label>Голос</label>
           <select class="input" id="voiceName">
+            <optgroup label="Яндекс · голоса Алисы">
+              <option value="yandex:alexander">Александр · мужской</option>
+              <option value="yandex:kirill">Кирилл · мужской</option>
+              <option value="yandex:anton">Антон · мужской</option>
+              <option value="yandex:filipp">Филипп · мужской</option>
+              <option value="yandex:ermil">Ермил · мужской</option>
+              <option value="yandex:zahar">Захар · мужской</option>
+              <option value="yandex:alena">Алёна · женский</option>
+              <option value="yandex:dasha">Даша · женский</option>
+              <option value="yandex:julia">Юлия · женский</option>
+              <option value="yandex:lera">Лера · женский</option>
+              <option value="yandex:marina">Марина · женский</option>
+              <option value="yandex:jane">Джейн · женский</option>
+            </optgroup>
             <optgroup label="Microsoft · нейроголоса">
               <option value="edge:en-US-AndrewMultilingualNeural">Andrew · мужской, тёплый</option>
               <option value="edge:en-US-BrianMultilingualNeural">Brian · мужской, спокойный</option>
@@ -275,6 +289,10 @@ section.active { display: block; }
             <div class="range"><input type="range" id="voice_rate" min="-30" max="40" step="1"><output id="voice_rateOut"></output></div></div>
 
         </div>
+        <div class="field" style="margin-top:6px"><label>Ключ Yandex SpeechKit (API-ключ сервисного аккаунта)</label>
+          <div class="secret-state" id="yandexState" style="margin-bottom:8px">—</div>
+          <div class="row"><input class="input" id="yandexKey" type="password" placeholder="AQVN…" style="flex:1;min-width:220px" autocomplete="off">
+          <button class="btn" id="saveYandex">Заменить ключ</button></div></div>
         <div class="field"><label>Текст для прослушивания</label><input class="input" id="previewText" value="Привет! Я Сириус. Чем займёмся?"></div>
         <div class="actions">
           <button class="btn" id="previewBtn">▶ Прослушать</button>
@@ -454,7 +472,15 @@ async function loadKeyState() {
     return row ? `Ключ задан <b>✓</b> · обновлён ${esc(ago(row.updated_at))}` : missing;
   };
   $('keyState').innerHTML = state('openrouter_key', 'Ключ ещё не задан — колонки не смогут думать.');
+  $('yandexState').innerHTML = state('yandex_key', 'Ключ не задан — голоса Яндекса недоступны, колонка говорит запасным голосом.');
 }
+$('saveYandex').onclick = async () => {
+  const key = $('yandexKey').value.trim();
+  if (key.length < 20) return toast('Ключ слишком короткий — скопируйте его целиком', true);
+  const { error } = await sb.rpc('set_secret', { p_name: 'yandex_key', p_value: key });
+  $('yandexKey').value = '';
+  error ? toast('Ошибка: ' + error.message, true) : (toast('Ключ Яндекса сохранён'), loadKeyState());
+};
 $('saveKey').onclick = async () => {
   const key = $('openrouterKey').value.trim();
   if (!key.startsWith('sk-or-')) return toast('Это не похоже на ключ OpenRouter', true);
