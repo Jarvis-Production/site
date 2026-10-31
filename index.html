@@ -249,13 +249,25 @@ section.active { display: block; }
     <section id="voice">
       <div class="card glass">
         <h2>Голос</h2>
-        <div class="hint">Нейроголоса Piper работают на вашем бесплатном сервере, без лимитов. Изменения применяются ко всем колонкам сразу.</div>
+        <div class="hint">Мультиязычные нейроголоса Microsoft: бесплатно, без ключей и лимитов, говорят по-русски. Если Microsoft недоступен, колонка временно говорит голосом Piper. Изменения применяются ко всем колонкам сразу.</div>
         <div class="field"><label>Голос</label>
           <select class="input" id="voiceName">
-            <option value="piper:dmitri">Дмитрий · мужской</option>
-            <option value="piper:denis">Денис · мужской</option>
-            <option value="piper:ruslan">Руслан · мужской</option>
-            <option value="piper:irina">Ирина · женский</option>
+            <optgroup label="Microsoft · нейроголоса">
+              <option value="edge:en-US-AndrewMultilingualNeural">Andrew · мужской, тёплый</option>
+              <option value="edge:en-US-BrianMultilingualNeural">Brian · мужской, спокойный</option>
+              <option value="edge:de-DE-FlorianMultilingualNeural">Florian · мужской, уверенный</option>
+              <option value="edge:fr-FR-RemyMultilingualNeural">Remy · мужской, мягкий</option>
+              <option value="edge:it-IT-GiuseppeMultilingualNeural">Giuseppe · мужской, бодрый</option>
+              <option value="edge:en-AU-WilliamMultilingualNeural">William · мужской</option>
+              <option value="edge:en-US-AvaMultilingualNeural">Ava · женский, живой</option>
+              <option value="edge:en-US-EmmaMultilingualNeural">Emma · женский, лёгкий</option>
+              <option value="edge:de-DE-SeraphinaMultilingualNeural">Seraphina · женский, ясный</option>
+              <option value="edge:fr-FR-VivienneMultilingualNeural">Vivienne · женский, мягкий</option>
+            </optgroup>
+            <optgroup label="Piper · запасные">
+              <option value="piper:dmitri">Дмитрий · мужской</option>
+              <option value="piper:denis">Денис · мужской</option>
+            </optgroup>
           </select>
         </div>
         <div class="grid">
@@ -465,10 +477,15 @@ $('previewBtn').onclick = async () => {
     const bytes = await r.arrayBuffer();
     if (!bytes.byteLength) throw new Error('пустой ответ синтеза');
     const ctx = new AudioContext();
-    const pcm = new Int16Array(bytes);
-    const buf = ctx.createBuffer(1, pcm.length, 16000);
-    const ch = buf.getChannelData(0);
-    for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+    let buf;
+    if ((r.headers.get('content-type') || '').includes('mpeg')) {
+      buf = await ctx.decodeAudioData(bytes);
+    } else {
+      const pcm = new Int16Array(bytes);
+      buf = ctx.createBuffer(1, pcm.length, 16000);
+      const ch = buf.getChannelData(0);
+      for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+    }
     const src = ctx.createBufferSource();
     src.buffer = buf;
     src.connect(ctx.destination);
