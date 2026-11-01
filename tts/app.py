@@ -14,6 +14,7 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import Response, StreamingResponse
 from piper import PiperVoice, SynthesisConfig
 from pydantic import BaseModel
+from starlette.background import BackgroundTask
 
 VOICE_DIR = os.environ.get("VOICE_DIR", "/app/voices")
 SPEAKERS = ["dmitri", "denis", "ruslan", "irina"]
@@ -35,7 +36,8 @@ async def relay(path: str, request: Request):
                                           headers=headers, content=body)
     resp = await relay_client.send(upstream, stream=True)
     out = {k: v for k, v in resp.headers.items() if k.lower() not in HOP | {"content-encoding"}}
-    return StreamingResponse(resp.aiter_raw(), status_code=resp.status_code, headers=out, background=None)
+    return StreamingResponse(resp.aiter_raw(), status_code=resp.status_code, headers=out,
+                             background=BackgroundTask(resp.aclose))
 
 
 class Req(BaseModel):
