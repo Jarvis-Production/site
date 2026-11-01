@@ -344,6 +344,16 @@ section.active { display: block; }
         <div class="list" id="devList" style="margin-top:16px"></div>
       </div>
       <div class="card glass">
+        <h2>Прошивка</h2>
+        <div class="hint">Новая прошивка ставится на все колонки сама: каждая колонка раз в минуту проверяет сервер, скачивает обновление, проверяет его и перезагружается. Если новая версия не сможет выйти на связь, колонка вернётся к прежней.</div>
+        <div class="meta" id="fwInfo" style="margin:10px 0">Загрузка…</div>
+        <div class="row">
+          <input type="file" id="fwFile" accept=".bin" class="input" style="flex:1;min-width:220px">
+          <button class="btn primary" id="fwUpload">Опубликовать</button>
+        </div>
+        <div class="hint" style="margin-top:8px">Файл: <code>speaker\firmware\.pio\build\esp32c3\firmware.bin</code> после сборки. Проще всего — команда <code>python speaker\tools\publish_firmware.py</code>: она сама соберёт и опубликует.</div>
+      </div>
+      <div class="card glass">
         <h2>Адрес сервера для колонок</h2>
         <div class="token" id="serverUrl"></div>
       </div>
@@ -572,11 +582,13 @@ async function sha256Hex(text) {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 async function loadDevices() {
-  const { data } = await sb.from('devices').select('id,name,token_hint,revoked,volume,last_seen,created_at').order('created_at');
+  loadFirmware();
+  let { data, error } = await sb.from('devices').select('id,name,token_hint,revoked,volume,last_seen,created_at,firmware').order('created_at');
+  if (error) ({ data } = await sb.from('devices').select('id,name,token_hint,revoked,volume,last_seen,created_at').order('created_at'));
   $('devList').innerHTML = (data || []).length ? data.map((d) => `
     <div class="item"><div class="main">
       <div class="title">${esc(d.name)} <span class="badge ${d.revoked ? 'off' : 'on'}">${d.revoked ? 'отозвана' : 'активна'}</span></div>
-      <div class="meta">Токен …${esc(d.token_hint)} · громкость ${d.volume}% · на связи: ${esc(ago(d.last_seen))}</div></div>
+      <div class="meta">Токен …${esc(d.token_hint)} · громкость ${d.volume}% · на связи: ${esc(ago(d.last_seen))}${d.firmware ? ' · прошивка ' + esc(fwName(d.firmware)) : ''}</div></div>
       ${d.revoked ? `<button class="btn danger" onclick="delDevice('${d.id}')">Удалить</button>` : `<button class="btn danger" onclick="revokeDevice('${d.id}')">Отозвать</button>`}
     </div>`).join('') : '<div class="empty">Колонок пока нет.</div>';
 }
@@ -593,6 +605,35 @@ $('devAdd').onclick = async () => {
     <div class="token">${token}</div>
     <div class="actions"><button class="btn" onclick="navigator.clipboard.writeText('${token}').then(()=>toast('Скопировано'))">Копировать</button>
     <button class="btn primary" onclick="closeModal()">Готово</button></div>`);
+};
+// Builds are unix times of publishing; the speaker reports "<build>-<md5 prefix>".
+function fwName(v) {
+  const build = parseInt(v, 10);
+  return build ? new Date(build * 1000).toLocaleString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'с кабеля';
+}
+async function adminFetch(path, opts = {}) {
+  const { data: { session } } = await sb.auth.getSession();
+  return fetch(SERVER + path, { ...opts, headers: { ...(opts.headers || {}), authorization: 'Bearer ' + session.access_token } });
+}
+async function loadFirmware() {
+  try {
+    const fw = await (await adminFetch('/firmware/info')).json();
+    $('fwInfo').textContent = fw.build ? `Опубликована: ${fwName(String(fw.build))} · ${Math.round(fw.size / 1024)} КБ · MD5 ${fw.md5.slice(0, 8)}` : 'Прошивка ещё не опубликована.';
+  } catch { $('fwInfo').textContent = 'Не удалось узнать текущую прошивку.'; }
+}
+$('fwUpload').onclick = async () => {
+  const file = $('fwFile').files[0];
+  if (!file) return toast('Выберите файл firmware.bin', true);
+  $('fwUpload').disabled = true;
+  try {
+    const r = await adminFetch('/firmware', { method: 'POST', headers: { 'content-type': 'application/octet-stream' }, body: await file.arrayBuffer() });
+    const res = await r.json();
+    if (!r.ok) throw new Error(res.error || r.status);
+    toast('Опубликовано. Колонки обновятся в течение минуты.');
+    $('fwFile').value = '';
+    loadFirmware();
+  } catch (e) { toast('Ошибка: ' + e.message, true); }
+  $('fwUpload').disabled = false;
 };
 window.revokeDevice = async (id) => { await sb.from('devices').update({ revoked: true }).eq('id', id); toast('Токен отозван'); loadDevices(); };
 window.delDevice = async (id) => { await sb.from('devices').delete().eq('id', id); loadDevices(); };
