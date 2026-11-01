@@ -629,7 +629,10 @@ async function loadOverview() {
 }
 
 // ---------- virtual speaker ----------
+// Reminders live in the browser like on the real speaker: absolute unix times, kept across reloads.
 const vs = { volume: 70, timers: [], recording: null };
+try { vs.timers = JSON.parse(localStorage.getItem('sirius-test-reminders') || '[]'); } catch {}
+function vsSave() { try { localStorage.setItem('sirius-test-reminders', JSON.stringify(vs.timers)); } catch {} }
 try { $('vsToken').value = localStorage.getItem('sirius-test-token') || ''; } catch {}
 $('vsToken').addEventListener('change', () => { try { localStorage.setItem('sirius-test-token', $('vsToken').value.trim()); } catch {} });
 
@@ -641,15 +644,20 @@ function vsLog(text, cls = '') {
 }
 function vsRenderTimers() {
   $('vsTimers').textContent = vs.timers.length
-    ? vs.timers.map((t) => `${t.label} · ${Math.max(0, Math.round((t.due - Date.now()) / 1000))} с`).join(', ')
+    ? vs.timers.map((t) => `${t.label} · ${new Date(t.due * 1000).toLocaleString('ru-RU', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}${t.days ? ' ↻' : ''}`).join(', ')
     : 'нет';
 }
 setInterval(() => {
-  const now = Date.now();
+  const now = Date.now() / 1000;
   for (const t of vs.timers.filter((t) => t.due <= now)) {
-    vs.timers = vs.timers.filter((x) => x !== t);
-    vsLog(`⏰ Сработал таймер «${esc(t.label)}»`);
-    vsSend(new Int16Array(0), '?event=timer&label=' + encodeURIComponent(t.label));
+    if (t.days) {   // repeating: move to the next matching weekday (bit 0 = Monday, Moscow time)
+      do t.due += 86400; while (t.due <= now || !(t.days & (1 << ((Math.floor((t.due + 10800) / 86400) + 3) % 7))));
+    } else {
+      vs.timers = vs.timers.filter((x) => x !== t);
+    }
+    vsSave();
+    vsLog(`⏰ Сработало: «${esc(t.label)}»`);
+    vsSend(new Int16Array(0), `?event=${t.timer ? 'timer' : 'reminder'}&label=` + encodeURIComponent(t.label));
   }
   vsRenderTimers();
 }, 1000);
@@ -693,6 +701,7 @@ async function vsSend(pcm, query) {
         authorization: 'Bearer ' + $('vsToken').value.trim(),
         'content-type': 'audio/L16; rate=16000; channels=1',
         'x-sirius-force': $('vsWake').checked ? '0' : '1',
+        'x-sirius-reminders': btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(vs.timers)))),
       },
       body: pcm.buffer,
     });
@@ -748,12 +757,14 @@ async function vsSend(pcm, query) {
       if (done) break;
     }
     if (actions.volume != null) { vs.volume = actions.volume; $('vsVolume').textContent = vs.volume; }
-    if (actions.cancel_timers) vs.timers = [];
-    for (const t of actions.timers || []) vs.timers.push({ label: t.label, due: Date.now() + t.seconds * 1000 });
+    if (actions.cancel === 'all') vs.timers = [];
+    else if (actions.cancel) vs.timers = vs.timers.filter((t) => !actions.cancel.includes(t.id));
+    vs.timers.push(...(actions.add || []));
+    vsSave();
     vsRenderTimers();
     const acts = [];
-    if (actions.timers?.length) acts.push('таймер: ' + actions.timers.map((t) => `${t.label} (${t.seconds} с)`).join(', '));
-    if (actions.cancel_timers) acts.push('таймеры отменены');
+    if (actions.add?.length) acts.push('напоминание: ' + actions.add.map((t) => `${t.label} (${new Date(t.due * 1000).toLocaleString('ru-RU', { weekday: 'short', hour: '2-digit', minute: '2-digit' })})`).join(', '));
+    if (actions.cancel) acts.push('отменено: ' + (actions.cancel === 'all' ? 'всё' : actions.cancel.length));
     if (actions.volume != null) acts.push('громкость ' + actions.volume);
     vsLog(`${heard ? `<div class="q">«${esc(heard)}»</div>` : ''}<div class="a">Ответ через ${first?.toFixed(1) ?? '—'} с${acts.length ? ' · ' + esc(acts.join(' · ')) : ''}</div>`);
   } catch (e) {
