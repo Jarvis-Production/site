@@ -683,6 +683,16 @@ function vsLog(text, cls = '') {
   el.innerHTML = text;
   $('vsLog').prepend(el);
 }
+// The same two-note chime the speaker plays after «Сириус».
+function vsChime() {
+  const ctx = new AudioContext();
+  [[1046, 0, 0.07], [1568, 0.08, 0.12]].forEach(([f, at, len]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = f; g.gain.value = 0.15;
+    o.connect(g).connect(ctx.destination);
+    o.start(ctx.currentTime + at); o.stop(ctx.currentTime + at + len);
+  });
+}
 function vsRenderTimers() {
   $('vsTimers').textContent = vs.timers.length
     ? vs.timers.map((t) => `${t.label} · ${new Date(t.due * 1000).toLocaleString('ru-RU', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}${t.days ? ' ↻' : ''}`).join(', ')
@@ -742,6 +752,7 @@ async function vsSend(pcm, query) {
         authorization: 'Bearer ' + $('vsToken').value.trim(),
         'content-type': 'audio/L16; rate=16000; channels=1',
         'x-sirius-force': $('vsWake').checked ? '0' : '1',
+        ...(vs.prefix ? { 'x-sirius-prefix': encodeURIComponent(vs.prefix) } : {}),
         'x-sirius-reminders': btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(vs.timers)))),
       },
       body: pcm.buffer,
@@ -798,6 +809,9 @@ async function vsSend(pcm, query) {
       if (done) break;
     }
     if (actions.volume != null) { vs.volume = actions.volume; $('vsVolume').textContent = vs.volume; }
+    vs.prefix = actions.prefix || '';
+    if (actions.earcon) vsChime();
+    if (actions.prefix) vsLog('…Сириус ждёт продолжения фразы — нажмите и договорите.');
     if (actions.cancel === 'all') vs.timers = [];
     else if (actions.cancel) vs.timers = vs.timers.filter((t) => !actions.cancel.includes(t.id));
     vs.timers.push(...(actions.add || []));
